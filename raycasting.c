@@ -28,6 +28,8 @@ const char *WINDOW_FONT = "/home/user/Downloads/arial.ttf";
 
 mof_Font *text = NULL;
 char test[100] = {"/0"};
+int mapflag = 0;
+int release_m = 1;
 
 Element *player;
 Sector *sector_1;
@@ -207,7 +209,7 @@ void RCA_Init()
   
   /* TODO: add your code here */
   text = mof_Font__new(screen, WINDOW_FONT);
-  player = RCA_NewElement(100, 100, 270);
+  player = RCA_NewElement(605, 700, 270);
   sector_1 = RCA_NewSector();
 }
 
@@ -217,15 +219,37 @@ void RCA_Init()
 void RCA_Load()
 {
   /* TODO: add your code here */
-  RCA_AddWallToSector(sector_1, 200, 300, 1000, 300);
-  RCA_AddWallToSector(sector_1, 200, 300, 200, 600);
-  RCA_AddWallToSector(sector_1, 1000, 300, 1000, 600);
-  RCA_AddWallToSector(sector_1, 200, 300, 600, 100);
-  RCA_AddWallToSector(sector_1, 600, 100, 1000, 300);
-  RCA_AddWallToSector(sector_1, 0, 0, 0, 719);
-  RCA_AddWallToSector(sector_1, 1279, 0, 1279, 719);
-  RCA_AddWallToSector(sector_1, 0, 0, 1279, 0);
-  RCA_AddWallToSector(sector_1, 0, 719, 1279, 719);
+  
+  /* house */
+  RCA_AddWallToSector(sector_1, 201, 299, 999, 299, 255, 0, 0, 255);
+  RCA_AddWallToSector(sector_1, 200, 300, 200, 600, 100, 0, 0, 255);
+  RCA_AddWallToSector(sector_1, 1000, 300, 1000, 600, 100, 0, 0, 255);
+  RCA_AddWallToSector(sector_1, 200, 299, 599.1, 100, 0, 0, 255, 255);
+  RCA_AddWallToSector(sector_1, 600.9, 100, 1000, 299, 0, 0, 100, 255);
+  
+  /* fence */
+  RCA_AddWallToSector(sector_1, 0, 0, 0, 719, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_1, 1279, 0, 1279, 719, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_1, 0, 0, 1279, 0, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_1, 0, 719, 1279, 719, 255, 255, 255, 255);
+  
+  /* column */
+  RCA_AddWallToSector(sector_1, 501, 501, 509, 501, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 501, 449, 509, 449, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 500, 450, 500, 500, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_1, 510, 450, 510, 500, 0, 100, 0, 255);
+  
+  RCA_AddWallToSector(sector_1, 701, 501, 709, 501, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 701, 449, 709, 449, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 700, 450, 700, 500, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_1, 710, 450, 710, 500, 0, 100, 0, 255);
+  
+  RCA_AddWallToSector(sector_1, 601, 501, 609, 501, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 601, 449, 609, 449, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 600, 450, 590, 474.1, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_1, 610, 450, 620, 474.1, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_1, 590, 475.9, 600, 500, 0, 150, 0, 255);
+  RCA_AddWallToSector(sector_1, 620, 475.9, 610, 500, 0, 150, 0, 255);
 }
 
 /**
@@ -290,6 +314,20 @@ void RCA_Update(int *running_loop)
   {
 	RCA_MoveElementBackward(player, 1);
   }
+  
+  /* toggling map */
+  if (RCA_CheckKeyboardKey(SDLK_m))
+  {
+	if (release_m)
+	{
+	  mapflag = (mapflag) ? 0 : 1;
+	  release_m = 0;
+	}
+  }
+  else 
+  {
+	release_m = 1;
+  }
 }
 
 /**
@@ -302,9 +340,17 @@ void RCA_Draw()
   
   /* TODO: add your code here */
   //RCA_DrawingWalls();
-  RCA_DrawSector(screen, sector_1);
-  RCA_DrawElement(screen, player);
-  RCA_DrawRays(screen, player, sector_1);
+  
+  if (mapflag)
+  {
+    RCA_DrawSector(screen, sector_1);
+    RCA_DrawElement(screen, player);
+    RCA_DrawRays(screen, player, sector_1);
+  }
+  else 
+  {
+	RCA_Draw3D(screen, player, sector_1);
+  }
 }
 
 /**

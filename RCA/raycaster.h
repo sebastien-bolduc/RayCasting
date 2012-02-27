@@ -119,6 +119,27 @@ double RCA_GettingDistanceToWall(Element *element, double *intersection, double 
   return distance;
 }
 
+/**
+ * Getting height of wall slice.
+ * 
+ * @param distance Distance to wall slice.
+ * @return         Height of wall.
+ */
+double RCA_GettingHeightOfWall(double distance)
+{
+  double height;
+  double certain_value = 20000;	
+	
+  if (distance == 0) 
+  {
+	distance = 1;							/* prevent the formula from dividing by zero */  
+  }
+  
+  height = certain_value / distance;		/* get the height by just dividing */
+  
+  return height;
+}
+
 /* ------------------------------------------------------------------------------------------ */
 /**
  * Check angle limit.
@@ -153,9 +174,9 @@ double RCA_CheckAngleLimit(double angle)
  */
 int RCA_CheckWallLimit(double wall[4], double xs, double ys)
 {
-  if (fabs((wall[0] - xs) + (wall[2] - xs)) > (fabs(wall[2] - wall[0]) + 1))
+  if (fabs((wall[0] - xs) + (wall[2] - xs)) > (fabs(wall[2] - wall[0]) + 2))
 	return 0;
-  if (fabs((wall[1] - ys) + (wall[3] - ys)) > (fabs(wall[3] - wall[1]) + 1))
+  if (fabs((wall[1] - ys) + (wall[3] - ys)) > (fabs(wall[3] - wall[1]) + 2))
 	return 0;
 	
   return 1;
@@ -285,6 +306,67 @@ void RCA_DrawRays(SDL_Surface *screen, Element *element, Sector *sector)
 	{
 	  lineRGBA(screen, element->x, element->y, intersection[0], intersection[1], 255, 255, 0, 50);
 	}
+	
+	ray_angle -= (60.0 / 128);
+  }
+}
+
+/**
+ * Draw 3D.
+ * 
+ * @param screen  A copy of the current SDL surface.
+ * @param element Pointer to an Element object.
+ * @param sector  Pointer to a Sector object.
+ */
+void RCA_Draw3D(SDL_Surface *screen, Element *element, Sector *sector)
+{
+  double intersection[2] = {0, 0}; double *tmp = NULL;
+  double current_top_distance = -1; double distance = 0;
+  int i;
+  double ray_angle = element->direction + 30;
+  int flag = 0;
+  double x = 1270, y = 0, height = 0;
+  Sector *wall = NULL;
+  
+  for (i = 0; i < 128; i++)
+  {
+	current_top_distance = -1;
+	intersection[0] = 0;
+	intersection[1] = 0;
+	flag = 0;
+	  
+	sector->current = sector->first->next;
+	while((sector->current) != NULL)
+	{
+	  tmp = RCA_FindWallIntersection(element, RCA_WallOfSector(sector->current), RCA_CheckAngleLimit(ray_angle));
+	  
+	  if (RCA_CorrectIntersection(element, tmp[0], tmp[1], RCA_CheckAngleLimit(ray_angle)) &&
+		  RCA_CheckWallLimit(RCA_WallOfSector(sector->current), tmp[0], tmp[1]))
+	  {
+	    distance = RCA_GettingDistanceToWall(element, tmp, RCA_CheckAngleLimit(ray_angle));
+	    if (current_top_distance == -1 || distance < current_top_distance)
+	    {
+		  wall = sector->current;
+		  intersection[0] = tmp[0];
+		  intersection[1] = tmp[1];
+		  current_top_distance = distance;
+		  flag = 1;
+	    }
+	  }
+	  sector->current = sector->current->next;
+	}
+
+	/* correcting distance */
+	current_top_distance *= fabs(cos((ray_angle - element->direction) * M_PI / 180));			
+
+	if (flag)
+	{
+	  height = RCA_GettingHeightOfWall(current_top_distance);
+	  y = (screen->h / 2) - (int)(height / 2);
+	  boxRGBA(screen, (int)x, (int)y, (int)(x + 9), (int)(y + (int)height), wall->r, wall->g, wall->b, wall->a);
+	}
+	
+	x -= 10;
 	
 	ray_angle -= (60.0 / 128);
   }
