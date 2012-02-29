@@ -27,14 +27,7 @@ double RCA_FindWallsGradient(double wall[4])
   double x1 = wall[0]; double y1 = wall[1];
   double x2 = wall[2]; double y2 = wall[3];
 	
-  if ((x2 - x1) == 0) 
-  {
-	m = 10000000;		/* wrong way to handel it ... */	
-  } 
-  else 
-  {
-	m = (y2 - y1) / (x2 - x1);
-  }
+  m = (y2 - y1) / (x2 - x1);			/* must handle infinite case ... */
 	
   return m;
 }
@@ -70,13 +63,49 @@ double *RCA_FindWallIntersection(Element *element, double wall[4], double angle_
   
   double playerx = element->x; double playery = element->y;
   double x1 = wall[0]; double y1 = wall[1];
+  double x2 = wall[2]; double y2 = wall[3];
   double m1 = RCA_FindWallsGradient(wall);
   double m2 = RCA_FindRaysGradient(angle_of_ray);
   
-  b1 = -(x1 - playerx) * m1 + (y1 - playery);
+  if (m1 == 0 && m2 == 0)
+  {
+	x = (fabs(x1 - playerx) < fabs(x2 - playerx)) ? x1 : x2;
+	x = ((fabs(x1 - playerx) + fabs(x2 - playerx)) == fabs(x1 - x2)) ? playerx : x;
+	
+	if (fabs(playery - y1) <= 1)
+	  y = y1;
+	else 
+	  return NULL;
+  }
+  else if (isinf(m1) && isinf(m2))
+  {
+	y = (fabs(y1 - playery) < fabs(y2 - playery)) ? y1 : y2;
+	y = ((fabs(y1 - playery) + fabs(y2 - playery)) == fabs(y1 - y2)) ? playery : y;
+	
+	if (fabs(playerx - x1) <= 1)
+	  x = x1;
+	else 
+	  return NULL;
+  }
+  else if (isinf(m1))
+  {
+	x = x1 - playerx;						/* origin of the coordinate system is the player */
+	y = x * m2;
+	x += playerx;
+	y += playery;
+  }
+  else if (isinf(m2))
+  {
+	x = playerx;							/* origin of the coordinate system is the player */
+	y = y1 + (x - x1) * m1;
+  }
+  else 
+  {
+    b1 = -(x1 - playerx) * m1 + (y1 - playery);
   
-  x = b1 / (m2 - m1) + playerx;			/* origin of the coordinate system is the player */
-  y = y1 + (x - x1) * m1;
+    x = b1 / (m2 - m1) + playerx;			/* origin of the coordinate system is the player */
+    y = y1 + (x - x1) * m1;
+  }
   
   intersection[0] = x;
   intersection[1] = y;
@@ -287,17 +316,20 @@ void RCA_DrawRays(SDL_Surface *screen, Element *element, Sector *sector)
 	{
 	  tmp = RCA_FindWallIntersection(element, RCA_WallOfSector(sector->current), RCA_CheckAngleLimit(ray_angle));
 	  
-	  if (RCA_CorrectIntersection(element, tmp[0], tmp[1], RCA_CheckAngleLimit(ray_angle)) &&
-		  RCA_CheckWallLimit(RCA_WallOfSector(sector->current), tmp[0], tmp[1]))
+	  if (tmp != NULL)
 	  {
-	    distance = RCA_GettingDistanceToWall(element, tmp, RCA_CheckAngleLimit(ray_angle));
-	    if (current_top_distance == -1 || distance < current_top_distance)
+	    if (RCA_CorrectIntersection(element, tmp[0], tmp[1], RCA_CheckAngleLimit(ray_angle)) &&
+		    RCA_CheckWallLimit(RCA_WallOfSector(sector->current), tmp[0], tmp[1]))
 	    {
-		  intersection[0] = tmp[0];
-		  intersection[1] = tmp[1];
-		  current_top_distance = distance;
-		  flag = 1;
-	    }
+	      distance = RCA_GettingDistanceToWall(element, tmp, RCA_CheckAngleLimit(ray_angle));
+	      if (current_top_distance == -1 || distance < current_top_distance)
+	      {
+		    intersection[0] = tmp[0];
+		    intersection[1] = tmp[1];
+		    current_top_distance = distance;
+		    flag = 1;
+	      }
+		}
 	  }
 	  sector->current = sector->current->next;
 	}
@@ -340,18 +372,21 @@ void RCA_Draw3D(SDL_Surface *screen, Element *element, Sector *sector)
 	{
 	  tmp = RCA_FindWallIntersection(element, RCA_WallOfSector(sector->current), RCA_CheckAngleLimit(ray_angle));
 	  
-	  if (RCA_CorrectIntersection(element, tmp[0], tmp[1], RCA_CheckAngleLimit(ray_angle)) &&
-		  RCA_CheckWallLimit(RCA_WallOfSector(sector->current), tmp[0], tmp[1]))
+	  if (tmp != NULL)
 	  {
-	    distance = RCA_GettingDistanceToWall(element, tmp, RCA_CheckAngleLimit(ray_angle));
-	    if (current_top_distance == -1 || distance < current_top_distance)
+	    if (RCA_CorrectIntersection(element, tmp[0], tmp[1], RCA_CheckAngleLimit(ray_angle)) &&
+		    RCA_CheckWallLimit(RCA_WallOfSector(sector->current), tmp[0], tmp[1]))
 	    {
-		  wall = sector->current;
-		  intersection[0] = tmp[0];
-		  intersection[1] = tmp[1];
-		  current_top_distance = distance;
-		  flag = 1;
-	    }
+	      distance = RCA_GettingDistanceToWall(element, tmp, RCA_CheckAngleLimit(ray_angle));
+	      if (current_top_distance == -1 || distance < current_top_distance)
+	      {
+		    wall = sector->current;
+		    intersection[0] = tmp[0];
+		    intersection[1] = tmp[1];
+		    current_top_distance = distance;
+		    flag = 1;
+	      }
+		}
 	  }
 	  sector->current = sector->current->next;
 	}

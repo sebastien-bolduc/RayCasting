@@ -1,6 +1,6 @@
 /**
  * @author Sebastien Bolduc <sebastien.bolduc@gmail.com>
- * @version 0.01
+ * @version 1.00
  * @since 2012-02-26 
  */
 
