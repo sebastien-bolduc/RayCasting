@@ -1,6 +1,6 @@
 /**
  * @author Sebastien Bolduc <sebastien.bolduc@gmail.com>
- * @version 0.01
+ * @version 1.00
  * @since 2012-02-24
  * 
  * Raycasting using the method describe at that website:
@@ -133,16 +133,6 @@ double RCA_GettingDistanceToWall(Element *element, double *intersection, double 
   x_diff = fabs(playerx - xs);
   y_diff = fabs(playery - ys);
   
-  /* this might be error prone */
-  /*if (abs(x_diff) > abs(y_diff))
-  { 
-	distance = x_diff / fabs(cos(angle * M_PI / 180)); 
-  }
-  else
-  {
-	distance = y_diff / fabs(sin(angle * M_PI / 180));
-  }*/
-  
   distance = sqrt(pow(x_diff, 2) + pow(y_diff, 2));
   
   return distance;
@@ -261,7 +251,8 @@ int RCA_GetIntersectionQuadrant(Element *element, double xs, double ys)
  */
 int RCA_CorrectIntersection(Element *element, double xs, double ys, double angle_of_ray)
 {
-  //if (RCA_GetIntersectionQuadrant(element, xs, ys) == RCA_GetQuadrant(angle_of_ray)) return(1); else return(0);
+  /* this doesn't work quite right */
+  /* if (RCA_GetIntersectionQuadrant(element, xs, ys) == RCA_GetQuadrant(angle_of_ray)) return(1); else return(0); */
   
   double adj, opp;
   double angle;
@@ -304,7 +295,7 @@ void RCA_DrawRays(SDL_Surface *screen, Element *element, Sector *sector)
   double ray_angle = element->direction + 30;
   int flag = 0;
   
-  for (i = 0; i < 128; i++)
+  for (i = 0; i < 256; i++)
   {
 	current_top_distance = -1;
 	intersection[0] = 0;
@@ -339,7 +330,7 @@ void RCA_DrawRays(SDL_Surface *screen, Element *element, Sector *sector)
 	  lineRGBA(screen, element->x, element->y, intersection[0], intersection[1], 255, 255, 0, 50);
 	}
 	
-	ray_angle -= (60.0 / 128);
+	ray_angle -= (60.0 / 256);
   }
 }
 
@@ -357,10 +348,10 @@ void RCA_Draw3D(SDL_Surface *screen, Element *element, Sector *sector)
   int i;
   double ray_angle = element->direction + 30;
   int flag = 0;
-  double x = 1270, y = 0, height = 0;
+  double x = 1275, y = 0, height = 0;
   Sector *wall = NULL;
   
-  for (i = 0; i < 128; i++)
+  for (i = 0; i < 256; i++)
   {
 	current_top_distance = -1;
 	intersection[0] = 0;
@@ -398,12 +389,12 @@ void RCA_Draw3D(SDL_Surface *screen, Element *element, Sector *sector)
 	{
 	  height = RCA_GettingHeightOfWall(current_top_distance);
 	  y = (screen->h / 2) - (int)(height / 2);
-	  boxRGBA(screen, (int)x, (int)y, (int)(x + 9), (int)(y + (int)height), wall->r, wall->g, wall->b, wall->a);
+	  boxRGBA(screen, (int)x, (int)y, (int)(x + 5), (int)(y + (int)height), wall->r, wall->g, wall->b, wall->a);
 	}
 	
-	x -= 10;
+	x -= 5;
 	
-	ray_angle -= (60.0 / 128);
+	ray_angle -= (60.0 / 256);
   }
 }
 

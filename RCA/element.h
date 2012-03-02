@@ -166,7 +166,7 @@ void RCA_MoveElementRight(Element *element, double speed)
  * @param element Pointer to an Element object.
  * @param speed   How much to rotate Element.
  */
-void RCA_RotateElement(Element *element, int speed)
+void RCA_RotateElement(Element *element, double speed)
 {
   /* check if we have a valid Element object */
   RCA_CheckElement(element);
