@@ -221,11 +221,11 @@ void RCA_Load()
   /* TODO: add your code here */
   
   /* house */
-  RCA_AddWallToSector(sector_1, 201, 299, 999, 299, 255, 0, 0, 255);
+  RCA_AddWallToSector(sector_1, 200, 300, 1000, 300, 255, 0, 0, 255);
   RCA_AddWallToSector(sector_1, 200, 300, 200, 600, 100, 0, 0, 255);
   RCA_AddWallToSector(sector_1, 1000, 300, 1000, 600, 100, 0, 0, 255);
-  RCA_AddWallToSector(sector_1, 200, 299, 599.1, 100, 0, 0, 255, 255);
-  RCA_AddWallToSector(sector_1, 600.9, 100, 1000, 299, 0, 0, 100, 255);
+  RCA_AddWallToSector(sector_1, 200, 300, 600, 100, 0, 0, 255, 255);
+  RCA_AddWallToSector(sector_1, 600, 100, 1000, 300, 0, 0, 100, 255);
   
   /* fence */
   RCA_AddWallToSector(sector_1, 0, 0, 0, 719, 255, 255, 255, 255);
@@ -234,22 +234,22 @@ void RCA_Load()
   RCA_AddWallToSector(sector_1, 0, 719, 1279, 719, 255, 255, 255, 255);
   
   /* column */
-  RCA_AddWallToSector(sector_1, 501, 501, 509, 501, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 501, 449, 509, 449, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 500, 500, 510, 500, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 500, 450, 510, 450, 0, 255, 0, 255);
   RCA_AddWallToSector(sector_1, 500, 450, 500, 500, 0, 100, 0, 255);
   RCA_AddWallToSector(sector_1, 510, 450, 510, 500, 0, 100, 0, 255);
   
-  RCA_AddWallToSector(sector_1, 701, 501, 709, 501, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 701, 449, 709, 449, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 700, 500, 710, 500, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 700, 450, 710, 450, 0, 255, 0, 255);
   RCA_AddWallToSector(sector_1, 700, 450, 700, 500, 0, 100, 0, 255);
   RCA_AddWallToSector(sector_1, 710, 450, 710, 500, 0, 100, 0, 255);
   
-  RCA_AddWallToSector(sector_1, 601, 501, 609, 501, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 601, 449, 609, 449, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 600, 450, 590, 474.1, 0, 100, 0, 255);
-  RCA_AddWallToSector(sector_1, 610, 450, 620, 474.1, 0, 100, 0, 255);
-  RCA_AddWallToSector(sector_1, 590, 475.9, 600, 500, 0, 150, 0, 255);
-  RCA_AddWallToSector(sector_1, 620, 475.9, 610, 500, 0, 150, 0, 255);
+  RCA_AddWallToSector(sector_1, 600, 500, 610, 500, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 600, 450, 610, 450, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_1, 600, 450, 590, 475, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_1, 610, 450, 620, 475, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_1, 590, 475, 600, 500, 0, 150, 0, 255);
+  RCA_AddWallToSector(sector_1, 620, 475, 610, 500, 0, 150, 0, 255);
 }
 
 /**

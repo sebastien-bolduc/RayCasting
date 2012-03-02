@@ -203,9 +203,9 @@ double RCA_CheckAngleLimit(double angle)
  */
 int RCA_CheckWallLimit(double wall[4], double xs, double ys)
 {
-  if (fabs((wall[0] - xs) + (wall[2] - xs)) > (fabs(wall[2] - wall[0]) + 2))
+  if (fabs((wall[0] - xs) + (wall[2] - xs)) > (fabs(wall[2] - wall[0])))
 	return 0;
-  if (fabs((wall[1] - ys) + (wall[3] - ys)) > (fabs(wall[3] - wall[1]) + 2))
+  if (fabs((wall[1] - ys) + (wall[3] - ys)) > (fabs(wall[3] - wall[1])))
 	return 0;
 	
   return 1;
