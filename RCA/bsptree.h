@@ -219,7 +219,7 @@ int RCA_FindLocationInBSPtree(BSPtree *node, Element *element)
 	else 
 	  return 1;
   }
-  else 
+  else if ((node->y1 - node->y2) == 0)
   {
 	if ((element->y - node->y1) == 0)
 	  return 0;
@@ -228,6 +228,20 @@ int RCA_FindLocationInBSPtree(BSPtree *node, Element *element)
 	else 
 	  return 1;
   }
+  
+  double m, b, y;
+  
+  m = (node->y2 - node->y1) / (node->x2 - node->x1);
+  b = node->y1 - (node->x1 * m);
+  
+  y = (element->x * m) + b;
+  
+  if (element->y > y)
+	return 1;
+  else if (element->y < y)
+	return -1;
+  else 
+	return 0;
 }
 
 /**
