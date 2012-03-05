@@ -67,6 +67,7 @@ double *RCA_FindWallIntersection(Element *element, double wall[4], double angle_
   double m1 = RCA_FindWallsGradient(wall);
   double m2 = RCA_FindRaysGradient(angle_of_ray);
   
+  /* handling the infinite case and more... */
   if (m1 == 0 && m2 == 0)
   {
 	x = (fabs(x1 - playerx) < fabs(x2 - playerx)) ? x1 : x2;
@@ -343,12 +344,15 @@ void RCA_DrawRays(SDL_Surface *screen, Element *element, Sector *sector)
  */
 void RCA_Draw3D(SDL_Surface *screen, Element *element, Sector *sector)
 {
+  if (sector == NULL)
+    return;	
+	
   double intersection[2] = {0, 0}; double *tmp = NULL;
   double current_top_distance = -1; double distance = 0;
   int i;
   double ray_angle = element->direction + 30;
   int flag = 0;
-  double x = 1275, y = 0, height = 0;
+  double x = 1275, y1 = 0, y2 = 0, height = 0;
   Sector *wall = NULL;
   
   for (i = 0; i < 256; i++)
@@ -372,10 +376,10 @@ void RCA_Draw3D(SDL_Surface *screen, Element *element, Sector *sector)
 	      if (current_top_distance == -1 || distance < current_top_distance)
 	      {
 		    wall = sector->current;
-		    intersection[0] = tmp[0];
-		    intersection[1] = tmp[1];
-		    current_top_distance = distance;
-		    flag = 1;
+			intersection[0] = tmp[0];
+			intersection[1] = tmp[1];
+			current_top_distance = distance;
+			flag = 1;
 	      }
 		}
 	  }
@@ -388,8 +392,9 @@ void RCA_Draw3D(SDL_Surface *screen, Element *element, Sector *sector)
 	if (flag)
 	{
 	  height = RCA_GettingHeightOfWall(current_top_distance);
-	  y = (screen->h / 2) - (int)(height / 2);
-	  boxRGBA(screen, (int)x, (int)y, (int)(x + 5), (int)(y + (int)height), wall->r, wall->g, wall->b, wall->a);
+	  y1 = (screen->h / 2) - (int)(height / 2) - (wall->floor * height / 100);
+	  y2 = (screen->h / 2) - (int)(height / 2);
+	  boxRGBA(screen, (int)x, (int)y1, (int)(x + 5), (int)(y2 + height), wall->r, wall->g, wall->b, wall->a);
 	}
 	
 	x -= 5;

@@ -13,6 +13,7 @@
 
 #include "../MyOwnFramework/mof/mof_font.h"
 
+#include "RCA/bsptree.h"
 #include "RCA/element.h"
 #include "RCA/keyboard.h"
 #include "RCA/raycaster.h"
@@ -33,6 +34,18 @@ int release_m = 1;
 
 Element *player;
 Sector *sector_1;
+Sector *sector_2;
+Sector *sector_3;
+Sector *sector_4;
+Sector *sector_5;
+Sector *sector_6;
+Sector *sector_7;
+Sector *sector_8;
+Sector *sector_9;
+Sector *sector_10;
+Sector *sector_11;
+Sector *sector_12;
+BSPtree *bsptree;
 
 /**
  * Initialization.
@@ -51,8 +64,21 @@ void RCA_Init()
   
   /* TODO: add your code here */
   text = mof_Font__new(screen, WINDOW_FONT);
-  player = RCA_NewElement(605, 700, 270);
+  
+  bsptree = RCA_NewBSPtree(640, 0, 640, 719);
+  player = RCA_NewElement(640, 310, 270);
   sector_1 = RCA_NewSector();
+  sector_2 = RCA_NewSector();
+  sector_3 = RCA_NewSector();
+  sector_4 = RCA_NewSector();
+  sector_5 = RCA_NewSector();
+  sector_6 = RCA_NewSector();
+  sector_7 = RCA_NewSector();
+  sector_8 = RCA_NewSector();
+  sector_9 = RCA_NewSector();
+  sector_10 = RCA_NewSector();
+  sector_11 = RCA_NewSector();
+  sector_12 = RCA_NewSector();
 }
 
 /**
@@ -61,37 +87,57 @@ void RCA_Init()
 void RCA_Load()
 {
   /* TODO: add your code here */
+  RCA_AddWallToSector(sector_1, 300, 200, 600, 200, 0, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_1, 300, 200, 300, 225, 0, 100, 100, 100, 255);
   
-  /* house */
-  RCA_AddWallToSector(sector_1, 200, 300, 1000, 300, 255, 0, 0, 255);
-  RCA_AddWallToSector(sector_1, 200, 300, 200, 600, 100, 0, 0, 255);
-  RCA_AddWallToSector(sector_1, 1000, 300, 1000, 600, 100, 0, 0, 255);
-  RCA_AddWallToSector(sector_1, 200, 300, 600, 100, 0, 0, 255, 255);
-  RCA_AddWallToSector(sector_1, 600, 100, 1000, 300, 0, 0, 100, 255);
+  RCA_AddWallToSector(sector_2, 600, 200, 640, 200, 0, 255, 255, 255, 255);
   
-  /* fence */
-  RCA_AddWallToSector(sector_1, 0, 0, 0, 719, 255, 255, 255, 255);
-  RCA_AddWallToSector(sector_1, 1279, 0, 1279, 719, 255, 255, 255, 255);
-  RCA_AddWallToSector(sector_1, 0, 0, 1279, 0, 255, 255, 255, 255);
-  RCA_AddWallToSector(sector_1, 0, 719, 1279, 719, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_3, 600, 225, 640, 225, -55, 0, 255, 0, 255);
   
-  /* column */
-  RCA_AddWallToSector(sector_1, 500, 500, 510, 500, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 500, 450, 510, 450, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 500, 450, 500, 500, 0, 100, 0, 255);
-  RCA_AddWallToSector(sector_1, 510, 450, 510, 500, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_4, 300, 225, 300, 275, 0, 100, 100, 100, 255);
   
-  RCA_AddWallToSector(sector_1, 700, 500, 710, 500, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 700, 450, 710, 450, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 700, 450, 700, 500, 0, 100, 0, 255);
-  RCA_AddWallToSector(sector_1, 710, 450, 710, 500, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_5, 600, 225, 600, 275, -55, 0, 100, 0, 255);
   
-  RCA_AddWallToSector(sector_1, 600, 500, 610, 500, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 600, 450, 610, 450, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_1, 600, 450, 590, 475, 0, 100, 0, 255);
-  RCA_AddWallToSector(sector_1, 610, 450, 620, 475, 0, 100, 0, 255);
-  RCA_AddWallToSector(sector_1, 590, 475, 600, 500, 0, 150, 0, 255);
-  RCA_AddWallToSector(sector_1, 620, 475, 610, 500, 0, 150, 0, 255);
+  RCA_AddWallToSector(sector_6, 300, 275, 300, 400, 0, 100, 100, 100, 255);
+  RCA_AddWallToSector(sector_6, 300, 400, 600, 400, 0, 255, 255, 255, 255);
+  
+  RCA_AddWallToSector(sector_7, 600, 275, 640, 275, -55, 0, 255, 0, 255);
+  
+  RCA_AddWallToSector(sector_8, 600, 400, 640, 400, 0, 255, 255, 255, 255);
+  
+  RCA_AddWallToSector(sector_9, 640, 200, 800, 200, 0, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_9, 800, 200, 800, 225, 0, 100, 100, 100, 255);
+  
+  RCA_AddWallToSector(sector_10, 640, 225, 640, 275, -55, 0, 100, 0, 255);
+  
+  RCA_AddWallToSector(sector_11, 800, 225, 800, 275, 0, 100, 100, 100, 255);
+  
+  RCA_AddWallToSector(sector_12, 800, 275, 800, 400, 0, 100, 100, 100, 255);
+  RCA_AddWallToSector(sector_12, 640, 400, 800, 400, 0, 255, 255, 255, 255);
+  
+  /* BSP tree */
+  RCA_AddNodeToBSPtreeFront(bsptree, 0, 275, 1219, 275);
+    RCA_AddLeafToBSPtreeFront(bsptree->front, sector_12);
+    RCA_AddNodeToBSPtreeBack(bsptree->front, 0, 225, 1219, 225);
+      RCA_AddLeafToBSPtreeBack(bsptree->front->back, sector_9);
+	  RCA_AddNodeToBSPtreeFront(bsptree->front->back, 700, 0, 700, 719);
+	    RCA_AddLeafToBSPtreeBack(bsptree->front->back->front, sector_10);
+		RCA_AddLeafToBSPtreeFront(bsptree->front->back->front, sector_11);
+  RCA_AddNodeToBSPtreeBack(bsptree, 0, 275, 1219, 275);
+    RCA_AddNodeToBSPtreeFront(bsptree->back, 600, 0, 600, 719);
+	  RCA_AddLeafToBSPtreeBack(bsptree->back->front, sector_6);
+	  RCA_AddNodeToBSPtreeFront(bsptree->back->front, 0, 300, 1219, 300);
+	    RCA_AddLeafToBSPtreeBack(bsptree->back->front->front, sector_7);
+		RCA_AddLeafToBSPtreeFront(bsptree->back->front->front, sector_8);
+	RCA_AddNodeToBSPtreeBack(bsptree->back, 0, 225, 1219, 225);
+	  RCA_AddNodeToBSPtreeFront(bsptree->back->back, 400, 0, 400, 719);
+	    RCA_AddLeafToBSPtreeBack(bsptree->back->back->front, sector_4);
+		RCA_AddLeafToBSPtreeFront(bsptree->back->back->front, sector_5);
+      RCA_AddNodeToBSPtreeBack(bsptree->back->back, 600, 0, 600, 719);
+		RCA_AddLeafToBSPtreeBack(bsptree->back->back->back, sector_1);
+		RCA_AddNodeToBSPtreeFront(bsptree->back->back->back, 0, 210, 1219, 210);
+		  RCA_AddLeafToBSPtreeBack(bsptree->back->back->back->front, sector_2);
+		  RCA_AddLeafToBSPtreeFront(bsptree->back->back->back->front, sector_3);
 }
 
 /**
@@ -181,17 +227,19 @@ void RCA_Draw()
   SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
   
   /* TODO: add your code here */
-  //RCA_DrawingWalls();
-  
   if (mapflag)
   {
     RCA_DrawSector(screen, sector_1);
+	RCA_DrawSector(screen, sector_2);
+	RCA_DrawSector(screen, sector_3);
+	RCA_DrawSector(screen, sector_4);
+	RCA_DrawSector(screen, sector_5);
     RCA_DrawElement(screen, player);
-    RCA_DrawRays(screen, player, sector_1);
+    //RCA_DrawRays(screen, player, sector_1);
   }
   else 
   {
-	RCA_Draw3D(screen, player, sector_1);
+	RCA_TraverseBSPtree(screen, bsptree, player);
   }
 }
 
@@ -221,8 +269,11 @@ int main(int argc, char **argv)
 
   /* Destroy our objects */
   mof_Font__destroy(text);
+  
+  RCA_DestroyBSPtree(bsptree);
   RCA_DestroyElement(player);
   RCA_DestroySector(sector_1);
+  RCA_DestroySector(sector_2);
 
   SDL_Quit();
 

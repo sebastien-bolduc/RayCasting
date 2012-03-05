@@ -22,6 +22,7 @@ typedef struct wall {
   double y1;
   double x2;
   double y2;
+  double floor;
   int r;
   int g;
   int b;
@@ -41,12 +42,13 @@ typedef struct wall {
  * @param y1	 Start piont of wall.
  * @param x2	 End point of wall.
  * @param y2	 End piont of wall.
+ * @param floor  Ground on which the wall rest.
  * @param r		 Red content of wall's color.
  * @param g		 Green content of wall's color.
  * @param b		 Blue content of wall's color.
  * @param a		 Alpha content of wall's color.
  */
-void RCA_ConstructSector(Sector *sector, double x1, double y1, double x2, double y2, int r, int g, int b, int a)
+void RCA_ConstructSector(Sector *sector, double x1, double y1, double x2, double y2, double floor, int r, int g, int b, int a)
 {
   /* here OR the RCA_SECTOR_TYPE constant into the type */
   sector->type |= RCA_SECTOR_TYPE;
@@ -55,6 +57,7 @@ void RCA_ConstructSector(Sector *sector, double x1, double y1, double x2, double
   sector->y1 = y1;
   sector->x2 = x2;
   sector->y2 = y2;
+  sector->floor = floor;
   sector->r = r;
   sector->g = g;
   sector->b = b;
@@ -64,7 +67,7 @@ void RCA_ConstructSector(Sector *sector, double x1, double y1, double x2, double
 /**
  * New.
  * 
- * @return An object mof_Graphicelement.
+ * @return An object Sector.
  */
 Sector *RCA_NewSector(void) 
 {	
@@ -72,7 +75,7 @@ Sector *RCA_NewSector(void)
   sector->type = RCA_SECTOR_TYPE;
   
   /* call the constructor */
-  RCA_ConstructSector(sector, 0, 0, 0, 0, 0, 0, 0, 0);
+  RCA_ConstructSector(sector, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   
   /* set pointer for previous and next element */
   sector->first = sector;
@@ -137,12 +140,13 @@ void RCA_DestroySector(Sector *sector)
  * @param y1	 Start piont of wall.
  * @param x2	 End point of wall.
  * @param y2	 End piont of wall.
+ * @param floor Ground on which the wall rest.
  * @param r		 Red content of wall's color.
  * @param g		 Green content of wall's color.
  * @param b		 Blue content of wall's color.
  * @param a		 Alpha content of wall's color.
  */
-void RCA_AddWallToSector(Sector *sector, double x1, double y1, double x2, double y2, int r, int g, int b, int a)
+void RCA_AddWallToSector(Sector *sector, double x1, double y1, double x2, double y2, double floor, int r, int g, int b, int a)
 {
   /* check if we have a valid Sector object */
   RCA_CheckSector(sector);
@@ -151,7 +155,7 @@ void RCA_AddWallToSector(Sector *sector, double x1, double y1, double x2, double
   new_wall->type = RCA_SECTOR_TYPE;
   
   /* call the constructor */
-  RCA_ConstructSector(new_wall, x1, y1, x2, y2, r, g, b, a);
+  RCA_ConstructSector(new_wall, x1, y1, x2, y2, floor, r, g, b, a);
   
   /* set pointer for current element */
   new_wall->first = NULL;
