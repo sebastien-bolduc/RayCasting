@@ -336,70 +336,125 @@ void RCA_DrawRays(SDL_Surface *screen, Element *element, Sector *sector)
 }
 
 /**
- * Draw 3D.
+ * Floor casting.
+ * 
+ * @param screen           A copy of the current SDL surface.
+ * @param position_of_wall Position of the wall being drawn.
+ * @param bottom_of_wall   Bottom of the wall being drawn.
+ * @param top_of_wall      Top of previous wall drawn.
+ */
+void RCA_FloorCasting(SDL_Surface *screen, int position_of_wall, int bottom_of_wall, int top_of_wall)
+{
+  int x1 = position_of_wall;
+  int y1 = bottom_of_wall;
+  int x2 = x1 + 5;
+  int y2 = top_of_wall;
+	
+  boxRGBA(screen, x1, y1, x2, y2, 0, 0, 100, 255);
+}
+
+/**
+ * Ceiling casting.
+ * 
+ * @param screen               A copy of the current SDL surface.
+ * @param position_of_wall     Position of the wall being drawn.
+ * @param top_of_wall          Top of the wall being drawn.
+ * @param top_of_previous_wall Top of previous wall drawn.
+ */
+void RCA_CeilingCasting(SDL_Surface *screen, int position_of_wall, int top_of_wall, int top_of_previous_wall)
+{
+  int x1 = position_of_wall;
+  int y1 = top_of_wall;
+  int x2 = x1 + 5;
+  int y2 = top_of_previous_wall;
+	
+  boxRGBA(screen, x1, y1, x2, y2, 100, 0, 0, 255);
+}
+
+/**
+ * Wall casting.
  * 
  * @param screen  A copy of the current SDL surface.
  * @param element Pointer to an Element object.
  * @param sector  Pointer to a Sector object.
  */
-void RCA_Draw3D(SDL_Surface *screen, Element *element, Sector *sector)
+void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector) 
 {
   if (sector == NULL)
-    return;	
-	
-  double intersection[2] = {0, 0}; double *tmp = NULL;
-  double current_top_distance = -1; double distance = 0;
+    return;
+
   int i;
+  double *intersection = NULL;	
+  double distance = 0, previous_distance = -1, corrected_distance = 0;
+  double height;
+  int top, bottom, previous_top = (screen->h - 1);
+  int no_floor_flag = 0, no_ceiling_flag = 1;
   double ray_angle = element->direction + 30;
-  int flag = 0;
-  double x = 1275, y1 = 0, y2 = 0, height = 0;
+  int slice_position = 1275;
   Sector *wall = NULL;
-  
+	
   for (i = 0; i < 256; i++)
   {
-	current_top_distance = -1;
-	intersection[0] = 0;
-	intersection[1] = 0;
-	flag = 0;
+	previous_distance = -1;
+	previous_top = (screen->h - 1);
+	no_ceiling_flag = 1;
 	  
 	sector->current = sector->first->next;
 	while((sector->current) != NULL)
 	{
-	  tmp = RCA_FindWallIntersection(element, RCA_WallOfSector(sector->current), RCA_CheckAngleLimit(ray_angle));
+	  intersection = RCA_FindWallIntersection(element, RCA_WallOfSector(sector->current), RCA_CheckAngleLimit(ray_angle));
 	  
-	  if (tmp != NULL)
+	  if (intersection != NULL)
 	  {
-	    if (RCA_CorrectIntersection(element, tmp[0], tmp[1], RCA_CheckAngleLimit(ray_angle)) &&
-		    RCA_CheckWallLimit(RCA_WallOfSector(sector->current), tmp[0], tmp[1]))
+	    if (RCA_CorrectIntersection(element, intersection[0], intersection[1], RCA_CheckAngleLimit(ray_angle)) &&
+		    RCA_CheckWallLimit(RCA_WallOfSector(sector->current), intersection[0], intersection[1]))
 	    {
-	      distance = RCA_GettingDistanceToWall(element, tmp, RCA_CheckAngleLimit(ray_angle));
-	      if (current_top_distance == -1 || distance < current_top_distance)
-	      {
-		    wall = sector->current;
-			intersection[0] = tmp[0];
-			intersection[1] = tmp[1];
-			current_top_distance = distance;
-			flag = 1;
-	      }
+		  wall = sector->current;	
+			
+		  distance = RCA_GettingDistanceToWall(element, intersection, RCA_CheckAngleLimit(ray_angle));
+		  
+		  /* correcting distance */
+		  corrected_distance = distance * fabs(cos((ray_angle - element->direction) * M_PI / 180)); 
+		  
+		  height = RCA_GettingHeightOfWall(corrected_distance);
+		  top = (screen->h / 2) - (int)(height / 2) - (int)(wall->floor * height / 100);
+		  bottom = (screen->h / 2) - (int)(height / 2) + (int)height;
+		  if (distance > previous_distance && previous_distance != -1)
+		  {
+			if (bottom >= previous_top)
+			{
+			  bottom = previous_top - 1;
+			  no_floor_flag = 1;
+			}
+		  }
+		  else
+		  {
+			if (top <= previous_top)
+			{
+			  no_ceiling_flag = 1;
+			}
+		  }
+		  
+		  if (top <= bottom)
+		  {
+			boxRGBA(screen, slice_position, top, slice_position + 5, bottom, wall->r, wall->g, wall->b, wall->a);
+		    if (!no_floor_flag)
+			  RCA_FloorCasting(screen, slice_position, bottom, (previous_top > bottom) ? previous_top : (screen->h - 1));
+			if (!no_ceiling_flag)
+			  RCA_CeilingCasting(screen, slice_position, top, previous_top);
+		  }
+		  no_floor_flag = 0;
+		  no_ceiling_flag = 0;
+		  
+		  previous_distance = distance;
+		  previous_top = top;
 		}
 	  }
 	  sector->current = sector->current->next;
-	}
-
-	/* correcting distance */
-	current_top_distance *= fabs(cos((ray_angle - element->direction) * M_PI / 180));			
-
-	if (flag)
-	{
-	  height = RCA_GettingHeightOfWall(current_top_distance);
-	  y1 = (screen->h / 2) - (int)(height / 2) - (wall->floor * height / 100);
-	  y2 = (screen->h / 2) - (int)(height / 2);
-	  boxRGBA(screen, (int)x, (int)y1, (int)(x + 5), (int)(y2 + height), wall->r, wall->g, wall->b, wall->a);
-	}
-	
-	x -= 5;
-	
+	}  
+	  
 	ray_angle -= (60.0 / 256);
+	slice_position -= 5;
   }
 }
 

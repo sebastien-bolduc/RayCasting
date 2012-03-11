@@ -89,7 +89,7 @@ void RCA_Init()
 void RCA_Load()
 {
   /* TODO: add your code here */
-  RCA_AddWallToSector(sector_1, 300, 200, 600, 200, 0, 255, 255, 255, 255);
+  /*RCA_AddWallToSector(sector_1, 300, 200, 600, 200, 0, 255, 255, 255, 255);
   RCA_AddWallToSector(sector_1, 300, 200, 300, 225, 0, 100, 100, 100, 255);
   
   RCA_AddWallToSector(sector_2, 600, 200, 640, 200, 0, 255, 255, 255, 255);
@@ -117,10 +117,10 @@ void RCA_Load()
   RCA_AddWallToSector(sector_12, 800, 275, 800, 400, 0, 100, 100, 100, 255);
   RCA_AddWallToSector(sector_12, 640, 400, 800, 400, 0, 255, 255, 255, 255);
   
-  RCA_AddWallToSector(sector_13, 650, 300, 700, 300, 0, 255, 0, 0, 255);
+  RCA_AddWallToSector(sector_13, 650, 300, 700, 300, 0, 255, 0, 0, 255);*/
   
   /* BSP tree */
-  RCA_AddNodeToBSPtreeFront(bsptree, 0, 275, 1219, 275);
+  /*RCA_AddNodeToBSPtreeFront(bsptree, 0, 275, 1219, 275);
     RCA_AddNodeToBSPtreeFront(bsptree->front, 640, 400, 800, 275);
 	  RCA_AddLeafToBSPtreeBack(bsptree->front->front, sector_13);
       RCA_AddLeafToBSPtreeFront(bsptree->front->front, sector_12);
@@ -143,7 +143,33 @@ void RCA_Load()
 		RCA_AddLeafToBSPtreeBack(bsptree->back->back->back, sector_1);
 		RCA_AddNodeToBSPtreeFront(bsptree->back->back->back, 0, 210, 1219, 210);
 		  RCA_AddLeafToBSPtreeBack(bsptree->back->back->back->front, sector_2);
-		  RCA_AddLeafToBSPtreeFront(bsptree->back->back->back->front, sector_3);
+		  RCA_AddLeafToBSPtreeFront(bsptree->back->back->back->front, sector_3);*/
+		  
+  RCA_AddWallToSector(sector_1, 300, 200, 600, 200, 0, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_1, 300, 200, 300, 400, 0, 100, 100, 100, 255);
+  RCA_AddWallToSector(sector_1, 300, 400, 600, 400, 0, 255, 255, 255, 255);
+  
+  RCA_AddWallToSector(sector_2, 600, 200, 640, 200, 0, 255, 255, 255, 255);
+  
+  RCA_AddWallToSector(sector_3, 600, 225, 640, 225, -75, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_3, 600, 275, 640, 275, -75, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_3, 600, 225, 600, 275, -75, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_3, 640, 225, 640, 275, -75, 0, 100, 0, 255);
+  
+  RCA_AddWallToSector(sector_4, 600, 400, 640, 400, 0, 255, 255, 255, 255);
+  
+  RCA_AddWallToSector(sector_5, 640, 200, 800, 200, 0, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_5, 800, 200, 800, 400, 0, 100, 100, 100, 255);
+  RCA_AddWallToSector(sector_5, 640, 400, 800, 400, 0, 255, 255, 255, 255);
+  
+  RCA_AddLeafToBSPtreeFront(bsptree, sector_5);
+  RCA_AddNodeToBSPtreeBack(bsptree, 600, 0, 600, 719);
+    RCA_AddLeafToBSPtreeBack(bsptree->back, sector_1);
+	RCA_AddNodeToBSPtreeFront(bsptree->back, 0, 275, 1279, 275);
+	  RCA_AddLeafToBSPtreeFront(bsptree->back->front, sector_4);
+	  RCA_AddNodeToBSPtreeBack(bsptree->back->front, 0, 225, 1279, 225);
+	    RCA_AddLeafToBSPtreeFront(bsptree->back->front->back, sector_3);
+	    RCA_AddLeafToBSPtreeBack(bsptree->back->front->back, sector_2);
 }
 
 /**

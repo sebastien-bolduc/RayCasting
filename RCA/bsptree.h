@@ -266,13 +266,13 @@ void RCA_TraverseBSPtree(SDL_Surface *screen, BSPtree *bsptree, Element *element
   if (location > 0)      /* if element in front of location */
   {
     RCA_TraverseBSPtree(screen, bsptree->back, element);
-    RCA_Draw3D(screen, element, bsptree->sector);
+	RCA_WallCasting(screen, element, bsptree->sector);
     RCA_TraverseBSPtree(screen, bsptree->front, element);
   }
   else if(location < 0) /* eye behind location */
   {
     RCA_TraverseBSPtree(screen, bsptree->front, element);
-    RCA_Draw3D(screen, element, bsptree->sector);
+	RCA_WallCasting(screen, element, bsptree->sector);
     RCA_TraverseBSPtree(screen, bsptree->back, element);
   }
   else                  /* eye coincidental with partition hyperplane */
