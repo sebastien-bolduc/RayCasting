@@ -387,8 +387,11 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
   double *intersection = NULL;	
   double distance = 0, previous_distance = -1, corrected_distance = 0;
   double height;
-  int top, bottom, previous_top = (screen->h - 1);
-  int no_floor_flag = 0, no_ceiling_flag = 1;
+  int floor_top, floor_bottom, previous_floor_top = (screen->h - 1);
+  int middle_top, middle_bottom, previous_middle_top = (screen->h - 1);
+  int ceiling_top, ceiling_bottom, previous_ceiling_bottom = 0;
+  int no_floor_floor_flag = 0, no_floor_ceiling_flag = 1;
+  int no_ceiling_floor_flag = 1, no_ceiling_ceiling_flag = 0;
   double ray_angle = element->direction + 30;
   int slice_position = 1275;
   Sector *wall = NULL;
@@ -396,8 +399,11 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
   for (i = 0; i < 256; i++)
   {
 	previous_distance = -1;
-	previous_top = (screen->h - 1);
-	no_ceiling_flag = 1;
+	previous_floor_top = (screen->h - 1);
+	previous_middle_top = (screen->h - 1);
+	previous_ceiling_bottom = 0;
+	no_floor_ceiling_flag = 1;
+	no_ceiling_floor_flag = 1;
 	  
 	sector->current = sector->first->next;
 	while((sector->current) != NULL)
@@ -417,37 +423,98 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
 		  corrected_distance = distance * fabs(cos((ray_angle - element->direction) * M_PI / 180)); 
 		  
 		  height = RCA_GettingHeightOfWall(corrected_distance);
-		  top = (screen->h / 2) - (int)(height / 2) - (int)(wall->floor * height / 100);
-		  bottom = (screen->h / 2) - (int)(height / 2) + (int)height;
-		  if (distance > previous_distance && previous_distance != -1)
-		  {
-			if (bottom >= previous_top)
-			{
-			  bottom = previous_top - 1;
-			  no_floor_flag = 1;
-			}
-		  }
-		  else
-		  {
-			if (top <= previous_top)
-			{
-			  no_ceiling_flag = 1;
-			}
-		  }
 		  
-		  if (top <= bottom)
+		  /* bottom */
+		  if (wall->floor != 0)
 		  {
-			boxRGBA(screen, slice_position, top, slice_position + 5, bottom, wall->r, wall->g, wall->b, wall->a);
-		    if (!no_floor_flag)
-			  RCA_FloorCasting(screen, slice_position, bottom, (previous_top > bottom) ? previous_top : (screen->h - 1));
-			if (!no_ceiling_flag)
-			  RCA_CeilingCasting(screen, slice_position, top, previous_top);
+			floor_top = (screen->h / 2) - (int)(height / 2) + (int)height - (int)floor(wall->floor * height / 100);
+		    floor_bottom = (screen->h / 2) - (int)(height / 2) + (int)height;
+			if (distance > previous_distance && previous_distance != -1)
+		    {
+			  if (floor_bottom >= previous_floor_top)
+			  {
+			    floor_bottom = previous_floor_top - 1;
+				no_floor_floor_flag = 1;
+			  }
+		    }
+			else
+		    {
+			  if (floor_top <= previous_floor_top)
+			  {
+			    no_floor_ceiling_flag = 1;
+			  }
+		    }
+			
+			if (floor_top <= floor_bottom)
+		    {
+			  boxRGBA(screen, slice_position, floor_top, slice_position + 5, floor_bottom, wall->r, wall->g, wall->b, wall->a);
+			  if (!no_floor_floor_flag)
+			    RCA_FloorCasting(screen, slice_position, floor_bottom, (previous_floor_top > floor_bottom) ? previous_floor_top : (screen->h - 1));
+			  if (!no_floor_ceiling_flag)
+			    RCA_CeilingCasting(screen, slice_position, floor_top, previous_floor_top);
+		    }
 		  }
-		  no_floor_flag = 0;
-		  no_ceiling_flag = 0;
+		  previous_floor_top = floor_top;
+		  no_floor_floor_flag = 0;
+		  no_floor_ceiling_flag = 0;
+		  
+		  /* top */
+		  if (wall->ceiling != 0)
+		  {
+			ceiling_top = (screen->h / 2) - (int)(height / 2);
+		    ceiling_bottom = (screen->h / 2) - (int)(height / 2) + (int)floor(wall->ceiling * height / 100);			
+			if (distance > previous_distance && previous_distance != -1)
+		    {
+			  if (ceiling_top <= previous_ceiling_bottom)
+			  {
+			    ceiling_top = previous_ceiling_bottom + 1;
+				no_ceiling_ceiling_flag = 1;
+			  }
+		    }
+			else
+		    {
+			  if (ceiling_bottom >= previous_ceiling_bottom)
+			  {
+			    no_ceiling_floor_flag = 1;
+			  }
+		    }
+			
+			if (ceiling_bottom >= ceiling_top)
+		    {
+			  boxRGBA(screen, slice_position, ceiling_top, slice_position + 5, ceiling_bottom, wall->r, wall->g, wall->b, wall->a);
+			  if (!no_ceiling_ceiling_flag)
+			    RCA_CeilingCasting(screen, slice_position, ceiling_top, (previous_ceiling_bottom < ceiling_top) ? previous_ceiling_bottom : 0);
+			  if (!no_ceiling_floor_flag)
+			    RCA_FloorCasting(screen, slice_position, ceiling_bottom, previous_ceiling_bottom);
+		    }
+		  }
+		  previous_ceiling_bottom = ceiling_bottom;
+		  no_ceiling_floor_flag = 0;
+		  no_ceiling_ceiling_flag = 0;
+			
+		  /* middle */
+		  if (wall->floor == 0 && wall->ceiling == 0)
+		  {
+			middle_top = (screen->h / 2) - (int)(height / 2);
+		    middle_bottom = (screen->h / 2) - (int)(height / 2) + (int)height;
+			if (distance > previous_distance && previous_distance != -1)
+		    {
+			  if (middle_bottom >= previous_middle_top)
+			  {
+			    middle_bottom = previous_middle_top - 1;
+			  }
+		    }
+			
+			if (middle_top <= middle_bottom)
+		    {
+			  boxRGBA(screen, slice_position, middle_top, slice_position + 5, middle_bottom, wall->r, wall->g, wall->b, wall->a);
+			  RCA_FloorCasting(screen, slice_position, middle_bottom, (screen->h - 1));
+			  RCA_CeilingCasting(screen, slice_position, middle_top, 0);
+		    }
+		  }
+		  previous_middle_top = middle_top;
 		  
 		  previous_distance = distance;
-		  previous_top = top;
 		}
 	  }
 	  sector->current = sector->current->next;
