@@ -79,10 +79,10 @@ void RCA_Load()
   
   RCA_AddWallToSector(sector_2, 600, 200, 640, 200, 0, 0, 255, 255, 255, 255);
   
-  RCA_AddWallToSector(sector_3, 600, 225, 640, 225, 25, 15, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_3, 600, 275, 640, 275, 25, 15, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_3, 600, 225, 600, 275, 25, 15, 0, 100, 0, 255);
-  RCA_AddWallToSector(sector_3, 640, 225, 640, 275, 25, 15, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_3, 600, 225, 640, 225, 15, 15, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_3, 600, 275, 640, 275, 15, 15, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_3, 600, 225, 600, 275, 15, 15, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_3, 640, 225, 640, 275, 15, 15, 0, 100, 0, 255);
   
   RCA_AddWallToSector(sector_4, 600, 400, 640, 400, 0, 0, 255, 255, 255, 255);
   
@@ -234,6 +234,9 @@ int main(int argc, char **argv)
   RCA_DestroyElement(player);
   RCA_DestroySector(sector_1);
   RCA_DestroySector(sector_2);
+  RCA_DestroySector(sector_3);
+  RCA_DestroySector(sector_4);
+  RCA_DestroySector(sector_5);
 
   SDL_Quit();
 
