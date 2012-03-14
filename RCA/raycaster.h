@@ -288,15 +288,16 @@ int RCA_CorrectIntersection(Element *element, double xs, double ys, double angle
  * @param position_of_wall Position of the wall being drawn.
  * @param bottom_of_wall   Bottom of the wall being drawn.
  * @param top_of_wall      Top of previous wall drawn.
+ * @param shade			   Shade for the floor.
  */
-void RCA_FloorCasting(SDL_Surface *screen, int position_of_wall, int bottom_of_wall, int top_of_wall)
+void RCA_FloorCasting(SDL_Surface *screen, int position_of_wall, int bottom_of_wall, int top_of_wall, int shade)
 {
   int x1 = position_of_wall;
   int y1 = bottom_of_wall;
   int x2 = x1 + 5;
   int y2 = top_of_wall;
 	
-  boxRGBA(screen, x1, y1, x2, y2, 0, 0, 100, 255);
+  boxRGBA(screen, x1, y1, x2, y2, 0, 0, 100 + shade, 255);
 }
 
 /**
@@ -306,15 +307,133 @@ void RCA_FloorCasting(SDL_Surface *screen, int position_of_wall, int bottom_of_w
  * @param position_of_wall     Position of the wall being drawn.
  * @param top_of_wall          Top of the wall being drawn.
  * @param top_of_previous_wall Top of previous wall drawn.
+ * @param shade			       Shade for the ceiling.
  */
-void RCA_CeilingCasting(SDL_Surface *screen, int position_of_wall, int top_of_wall, int top_of_previous_wall)
+void RCA_CeilingCasting(SDL_Surface *screen, int position_of_wall, int top_of_wall, int top_of_previous_wall, int shade)
 {
   int x1 = position_of_wall;
   int y1 = top_of_wall;
   int x2 = x1 + 5;
   int y2 = top_of_previous_wall;
 	
-  boxRGBA(screen, x1, y1, x2, y2, 100, 0, 0, 255);
+  boxRGBA(screen, x1, y1, x2, y2, 100 + shade, 0, 0, 255);
+}
+
+/**
+ * Bottom wall casting.
+ */
+void RCA_BottomWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_position, int top[2], int bottom[2], int middle_top[2], int middle_bottom[2])
+{
+  if (wall[1] == NULL)
+  {
+	if (wall[0] != NULL)
+	{
+	  if (wall[0]->floor != 0)
+	  {
+		boxRGBA(screen, slice_position, middle_bottom[0], slice_position + 5, bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
+		if (wall[0]->floor > 0)
+		{
+		  RCA_CeilingCasting(screen, slice_position, middle_bottom[0], (screen->h - 1), 25);
+		}
+		else 
+		{
+		  RCA_FloorCasting(screen, slice_position, middle_bottom[0], (screen->h - 1), -25);
+		}
+	  }
+	}
+  }
+  else
+  {
+	if (wall[0]->floor != 0)
+	{
+	  boxRGBA(screen, slice_position, middle_bottom[1], slice_position + 5, bottom[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
+	  boxRGBA(screen, slice_position, middle_bottom[0], slice_position + 5, bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
+		
+	  if (middle_bottom[1] < bottom[0] && wall[0]->floor < 0)
+		RCA_FloorCasting(screen, slice_position, middle_bottom[1], bottom[0], -25);
+		  
+	  if (middle_bottom[1] < middle_bottom[0] && wall[0]->floor > 0)
+		RCA_CeilingCasting(screen, slice_position, middle_bottom[1], middle_bottom[0], 25);
+	}
+  }
+}
+
+/**
+ * Middle wall casting.
+ */
+void RCA_MiddleWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_position, int top[2], int bottom[2], int middle_top[2], int middle_bottom[2])
+{
+  if (wall[1] == NULL)
+  {
+	if (wall[0] != NULL)
+	{
+	  if (wall[0]->floor == 0 && wall[0]->ceiling == 0)
+	  {
+		if (wall[0]->a != 0)
+		  boxRGBA(screen, slice_position, middle_top[0], slice_position + 5, middle_bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
+		RCA_FloorCasting(screen, slice_position, bottom[0], (screen->h - 1), 0);
+		RCA_CeilingCasting(screen, slice_position, top[0], 0, 0);
+	  }
+	}
+  }
+  else
+  {
+	if (wall[0]->floor == 0 && wall[0]->ceiling == 0)
+	{
+	  if (wall[1]->a != 0)
+		boxRGBA(screen, slice_position, middle_top[1], slice_position + 5, middle_bottom[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
+	  if (wall[0]->a != 0)
+	  {
+		boxRGBA(screen, slice_position, middle_top[0], slice_position + 5, middle_bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
+		RCA_FloorCasting(screen, slice_position, middle_bottom[0], (screen->h - 1), 0);
+		RCA_CeilingCasting(screen, slice_position, middle_top[0], 0, 0);
+	  }
+	  else 
+	  {
+		RCA_FloorCasting(screen, slice_position, middle_bottom[1], (screen->h - 1), 0);
+		RCA_CeilingCasting(screen, slice_position, middle_top[1], 0, 0);	
+	  }
+	}
+  }
+}
+ 
+/**
+ * Top wall casting.
+ */
+void RCA_TopWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_position, int top[2], int bottom[2], int middle_top[2], int middle_bottom[2])
+{
+  if (wall[1] == NULL)
+  {
+	if (wall[0] != NULL)
+	{
+	  if (wall[0]->ceiling != 0)
+	  {
+		boxRGBA(screen, slice_position, top[0], slice_position + 5, middle_top[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
+		if (wall[0]->ceiling > 0)
+		{
+		  RCA_FloorCasting(screen, slice_position, middle_top[0], 0, 25);
+		}
+		else 
+		{
+		  RCA_CeilingCasting(screen, slice_position, middle_top[0], 0, -25);
+		}
+	  }
+	}
+  }
+  else
+  {
+	if (wall[0]->ceiling != 0)
+	{
+	  boxRGBA(screen, slice_position, top[1], slice_position + 5, middle_top[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
+	  boxRGBA(screen, slice_position, top[0], slice_position + 5, middle_top[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
+	
+	  if (top[0] < middle_top[1] && wall[0]->ceiling < 0)
+		RCA_CeilingCasting(screen, slice_position, top[0], middle_top[1], -25);	
+		
+	  if (middle_top[1] > middle_top[0] && wall[0]->ceiling > 0)
+		RCA_FloorCasting(screen, slice_position, middle_top[0], middle_top[1], 25);
+	}
+  }
 }
 
 /**
@@ -399,89 +518,28 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
 	  sector->current = sector->current->next;
 	}
 	
-	/* bottom */
-	if (wall[1] == NULL)
+	if (wall[0] != NULL)
 	{
-	  if (wall[0] != NULL)
+	  if (wall[0]->floor < wall[0]->ceiling)
 	  {
-		if (wall[0]->floor != 0)
-		{
-	      boxRGBA(screen, slice_position, middle_bottom[0], slice_position + 5, bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		  RCA_FloorCasting(screen, slice_position, bottom[0], (screen->h - 1));
-		  RCA_CeilingCasting(screen, slice_position, middle_bottom[0], (screen->h - 1));
-		}
+	    /* bottom */
+	    RCA_BottomWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
+	    /* middle */
+	    RCA_MiddleWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
+	    /* top */
+	    RCA_TopWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
 	  }
-	}
-	else
-	{
-	  if (wall[0]->floor != 0)
+	  else
 	  {
-	    boxRGBA(screen, slice_position, middle_bottom[1], slice_position + 5, bottom[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
-	    boxRGBA(screen, slice_position, middle_bottom[0], slice_position + 5, bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		if (bottom[1] < middle_bottom[0])
-		  RCA_FloorCasting(screen, slice_position, bottom[1], middle_bottom[0]);
-		if (middle_bottom[1] < middle_bottom[0])
-		  RCA_CeilingCasting(screen, slice_position, middle_bottom[1], middle_bottom[0]);
+		/* bottom */
+	    RCA_TopWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
+	    /* middle */
+	    RCA_MiddleWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
+	    /* top */
+	    RCA_BottomWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);  
 	  }
 	}
 	
-	/* middle */
-	if (wall[1] == NULL)
-	{
-	  if (wall[0] != NULL)
-	  {
-		if (wall[0]->floor == 0 && wall[0]->ceiling == 0)
-		{
-	      boxRGBA(screen, slice_position, middle_top[0], slice_position + 5, middle_bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		  RCA_FloorCasting(screen, slice_position, bottom[0], (screen->h - 1));
-		  RCA_CeilingCasting(screen, slice_position, top[0], 0);
-		}
-	  }
-	}
-	else
-	{
-	  if (wall[0]->floor == 0 && wall[0]->ceiling == 0)
-	  {
-	    boxRGBA(screen, slice_position, middle_top[1], slice_position + 5, middle_bottom[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
-	    boxRGBA(screen, slice_position, middle_top[0], slice_position + 5, middle_bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-	  }
-	}
-	
-	/* top */
-	if (wall[1] == NULL)
-	{
-	  if (wall[0] != NULL)
-	  {
-		if (wall[0]->ceiling != 0)
-		{
-		  boxRGBA(screen, slice_position, top[0], slice_position + 5, middle_top[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		  RCA_CeilingCasting(screen, slice_position, top[0], 0);
-		  RCA_FloorCasting(screen, slice_position, middle_top[0], 0);
-		}
-	  }
-	}
-	else
-	{
-	  if (wall[0]->ceiling != 0)
-	  {
-		if (wall[0]->floor > wall[0]->ceiling)
-		{
-		  if (middle_top[1] >= middle_bottom[0])
-		    middle_top[1] = middle_bottom[0];
-		  if (top[1] >= middle_bottom[0])
-			top[1] = middle_bottom[0];
-		}
-		  
-		if (top[1] <= middle_top[1])  
-	      boxRGBA(screen, slice_position, top[1], slice_position + 5, middle_top[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
-		if (top[0] <= middle_top[0])
-	      boxRGBA(screen, slice_position, top[0], slice_position + 5, middle_top[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		if (top[1] > middle_top[0])
-		  RCA_CeilingCasting(screen, slice_position, middle_top[0], top[1]);
-		if (middle_top[1] > middle_top[0])
-		  RCA_FloorCasting(screen, slice_position, middle_top[0], middle_top[1]);
-	  }
-	}
 	
 	ray_angle -= (60.0 / 256);
 	slice_position -= 5;

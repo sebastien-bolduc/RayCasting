@@ -73,19 +73,23 @@ void RCA_Init()
 void RCA_Load()
 {
   /* TODO: add your code here */
+  RCA_AddWallToSector(sector_1, 600, 225, 600, 275, 0, 0, 255, 255, 255, 0);
   RCA_AddWallToSector(sector_1, 300, 200, 600, 200, 0, 0, 255, 255, 255, 255);
   RCA_AddWallToSector(sector_1, 300, 200, 300, 400, 0, 0, 100, 100, 100, 255);
   RCA_AddWallToSector(sector_1, 300, 400, 600, 400, 0, 0, 255, 255, 255, 255);
   
   RCA_AddWallToSector(sector_2, 600, 200, 640, 200, 0, 0, 255, 255, 255, 255);
+  RCA_AddWallToSector(sector_2, 600, 225, 640, 225, 0, 0, 255, 255, 255, 0);
   
-  RCA_AddWallToSector(sector_3, 600, 225, 640, 225, 15, 15, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_3, 600, 275, 640, 275, 15, 15, 0, 255, 0, 255);
-  RCA_AddWallToSector(sector_3, 600, 225, 600, 275, 15, 15, 0, 100, 0, 255);
-  RCA_AddWallToSector(sector_3, 640, 225, 640, 275, 15, 15, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_3, 600, 225, 640, 225, 15, -25, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_3, 600, 275, 640, 275, 15, -25, 0, 255, 0, 255);
+  RCA_AddWallToSector(sector_3, 600, 225, 600, 275, 15, -25, 0, 100, 0, 255);
+  RCA_AddWallToSector(sector_3, 640, 225, 640, 275, 15, -25, 0, 100, 0, 255);
   
+  RCA_AddWallToSector(sector_4, 600, 275, 640, 275, 0, 0, 255, 255, 255, 0);
   RCA_AddWallToSector(sector_4, 600, 400, 640, 400, 0, 0, 255, 255, 255, 255);
   
+  RCA_AddWallToSector(sector_5, 640, 225, 640, 275, 0, 0, 255, 255, 255, 0);
   RCA_AddWallToSector(sector_5, 640, 200, 800, 200, 0, 0, 255, 255, 255, 255);
   RCA_AddWallToSector(sector_5, 800, 200, 800, 400, 0, 0, 100, 100, 100, 255);
   RCA_AddWallToSector(sector_5, 640, 400, 800, 400, 0, 0, 255, 255, 255, 255);
