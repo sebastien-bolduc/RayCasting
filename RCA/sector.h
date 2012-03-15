@@ -1,6 +1,6 @@
 /**
  * @author Sebastien Bolduc <sebastien.bolduc@gmail.com>
- * @version 1.00
+ * @version 2.00
  * @since 2012-02-26 
  */
 
@@ -24,10 +24,9 @@ typedef struct wall {
   double y2;
   double floor;
   double ceiling;
-  int r;
-  int g;
-  int b;
-  int a;
+  int bottom_color[4];
+  int middle_color[4];
+  int top_color[4];
   struct wall *first;
   struct wall *last;
   struct wall *current;
@@ -38,19 +37,19 @@ typedef struct wall {
 /**
  * Constructor.
  *  
- * @param sector  Pointer to a Sector object.
- * @param x1	  Start point of wall.
- * @param y1	  Start piont of wall.
- * @param x2	  End point of wall.
- * @param y2	  End piont of wall.
- * @param floor   Ground on which the wall rest.
- * @param ceiling Ceiling on which the wall rest.
- * @param r		  Red content of wall's color.
- * @param g		  Green content of wall's color.
- * @param b		  Blue content of wall's color.
- * @param a		  Alpha content of wall's color.
+ * @param sector       Pointer to a Sector object.
+ * @param x1	       Start point of wall.
+ * @param y1	       Start piont of wall.
+ * @param x2	       End point of wall.
+ * @param y2	       End piont of wall.
+ * @param floor        Ground on which the wall rest.
+ * @param ceiling      Ceiling on which the wall rest.
+ * @param bottom_color Bottom wall's color.
+ * @param middle_color Middle wall's color.
+ * @param top_color	   Top wall's color.
  */
-void RCA_ConstructSector(Sector *sector, double x1, double y1, double x2, double y2, double floor, double ceiling, int r, int g, int b, int a)
+void RCA_ConstructSector(Sector *sector, double x1, double y1, double x2, double y2, double floor, double ceiling, int bottom_color[4], 
+						int middle_color[4], int top_color[4])
 {
   /* here OR the RCA_SECTOR_TYPE constant into the type */
   sector->type |= RCA_SECTOR_TYPE;
@@ -61,10 +60,9 @@ void RCA_ConstructSector(Sector *sector, double x1, double y1, double x2, double
   sector->y2 = y2;
   sector->floor = floor;
   sector->ceiling = ceiling;
-  sector->r = r;
-  sector->g = g;
-  sector->b = b;
-  sector->a = a;
+  sector->bottom_color[0] = bottom_color[0]; sector->bottom_color[1] = bottom_color[1]; sector->bottom_color[2] = bottom_color[2]; sector->bottom_color[3] = bottom_color[3];
+  sector->middle_color[0] = middle_color[0]; sector->middle_color[1] = middle_color[1]; sector->middle_color[2] = middle_color[2]; sector->middle_color[3] = middle_color[3];
+  sector->top_color[0] = top_color[0]; sector->top_color[1] = top_color[1]; sector->top_color[2] = top_color[2]; sector->top_color[3] = top_color[3];
 }
 
 /**
@@ -78,7 +76,8 @@ Sector *RCA_NewSector(void)
   sector->type = RCA_SECTOR_TYPE;
   
   /* call the constructor */
-  RCA_ConstructSector(sector, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  int tmp[4] = {0};
+  RCA_ConstructSector(sector, 0, 0, 0, 0, 0, 0, tmp, tmp, tmp);
   
   /* set pointer for previous and next element */
   sector->first = sector;
@@ -138,19 +137,19 @@ void RCA_DestroySector(Sector *sector)
  * Add a wall to the sector already existing.  Only the master
  * (the first created sector) can access this list.
  * 
- * @param sector  Pointer to a Sector object.
- * @param x1	  Start point of wall.
- * @param y1	  Start piont of wall.
- * @param x2	  End point of wall.
- * @param y2	  End piont of wall.
- * @param floor   Ground on which the wall rest.
- * @param ceiling Ceiling on which the wall rest.
- * @param r		  Red content of wall's color.
- * @param g		  Green content of wall's color.
- * @param b		  Blue content of wall's color.
- * @param a		  Alpha content of wall's color.
+ * @param sector       Pointer to a Sector object.
+ * @param x1	       Start point of wall.
+ * @param y1	       Start piont of wall.
+ * @param x2	       End point of wall.
+ * @param y2	       End piont of wall.
+ * @param floor        Ground on which the wall rest.
+ * @param ceiling      Ceiling on which the wall rest.
+ * @param bottom_color Bottom wall's color.
+ * @param middle_color Middle wall's color.
+ * @param top_color	   Top wall's color.
  */
-void RCA_AddWallToSector(Sector *sector, double x1, double y1, double x2, double y2, double floor, double ceiling, int r, int g, int b, int a)
+void RCA_AddWallToSector(Sector *sector, double x1, double y1, double x2, double y2, double floor, double ceiling, int bottom_color[4], 
+						int middle_color[4], int top_color[4])
 {
   /* check if we have a valid Sector object */
   RCA_CheckSector(sector);
@@ -159,7 +158,7 @@ void RCA_AddWallToSector(Sector *sector, double x1, double y1, double x2, double
   new_wall->type = RCA_SECTOR_TYPE;
   
   /* call the constructor */
-  RCA_ConstructSector(new_wall, x1, y1, x2, y2, floor, ceiling, r, g, b, a);
+  RCA_ConstructSector(new_wall, x1, y1, x2, y2, floor, ceiling, bottom_color, middle_color, top_color);
   
   /* set pointer for current element */
   new_wall->first = NULL;
@@ -252,7 +251,7 @@ void RCA_DrawSector(SDL_Surface *screen, Sector *sector)
   while((sector->current) != NULL)
   {
 	lineRGBA(screen, sector->current->x1, sector->current->y1, sector->current->x2, sector->current->y2, 
-			 sector->current->r, sector->current->g, sector->current->b, sector->current->a);
+			 sector->current->top_color[0], sector->current->top_color[1], sector->current->top_color[2], 255);
 	sector->current = sector->current->next;
   }
 }

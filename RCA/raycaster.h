@@ -1,6 +1,6 @@
 /**
  * @author Sebastien Bolduc <sebastien.bolduc@gmail.com>
- * @version 1.00
+ * @version 2.00
  * @since 2012-02-24
  * 
  * Raycasting using the method describe at that website:
@@ -321,6 +321,14 @@ void RCA_CeilingCasting(SDL_Surface *screen, int position_of_wall, int top_of_wa
 
 /**
  * Bottom wall casting.
+ * 
+ * @param screen         A copy of the current SDL surface.
+ * @param wall           Pointer to a Sector object.
+ * @param slice_position Position of current wall slice.
+ * @param top            Top of wall.
+ * @param bottom         Bottom of wall.
+ * @param middle_top     Top of 'middle wall'.
+ * @param middle_bottom  Bottom of 'middle wall'.
  */
 void RCA_BottomWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_position, int top[2], int bottom[2], int middle_top[2], int middle_bottom[2])
 {
@@ -330,15 +338,10 @@ void RCA_BottomWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_posit
 	{
 	  if (wall[0]->floor != 0)
 	  {
-		boxRGBA(screen, slice_position, middle_bottom[0], slice_position + 5, bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		if (wall[0]->floor > 0)
-		{
-		  RCA_CeilingCasting(screen, slice_position, middle_bottom[0], (screen->h - 1), 25);
-		}
-		else 
-		{
-		  RCA_FloorCasting(screen, slice_position, middle_bottom[0], (screen->h - 1), -25);
-		}
+		boxRGBA(screen, slice_position, middle_bottom[0], slice_position + 5, bottom[0], wall[0]->bottom_color[0], wall[0]->bottom_color[1], 
+				wall[0]->bottom_color[2], wall[0]->bottom_color[3]);
+		
+		RCA_FloorCasting(screen, slice_position, middle_bottom[0], (screen->h - 1), -25);
 	  }
 	}
   }
@@ -346,20 +349,27 @@ void RCA_BottomWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_posit
   {
 	if (wall[0]->floor != 0)
 	{
-	  boxRGBA(screen, slice_position, middle_bottom[1], slice_position + 5, bottom[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
-	  boxRGBA(screen, slice_position, middle_bottom[0], slice_position + 5, bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		
-	  if (middle_bottom[1] < bottom[0] && wall[0]->floor < 0)
-		RCA_FloorCasting(screen, slice_position, middle_bottom[1], bottom[0], -25);
-		  
-	  if (middle_bottom[1] < middle_bottom[0] && wall[0]->floor > 0)
-		RCA_CeilingCasting(screen, slice_position, middle_bottom[1], middle_bottom[0], 25);
+	  boxRGBA(screen, slice_position, middle_bottom[1], slice_position + 5, bottom[1], wall[1]->bottom_color[0], wall[1]->bottom_color[1], 
+			  wall[1]->bottom_color[2], wall[1]->bottom_color[3]);
+	  boxRGBA(screen, slice_position, middle_bottom[0], slice_position + 5, bottom[0], wall[0]->bottom_color[0], wall[0]->bottom_color[1], 
+			  wall[0]->bottom_color[2], wall[0]->bottom_color[3]);
+	  
+      if (middle_bottom[1] < middle_bottom[0])		  
+	    RCA_FloorCasting(screen, slice_position, middle_bottom[1], middle_bottom[0], -25);
 	}
   }
 }
 
 /**
  * Middle wall casting.
+ * 
+ * @param screen         A copy of the current SDL surface.
+ * @param wall           Pointer to a Sector object.
+ * @param slice_position Position of current wall slice.
+ * @param top            Top of wall.
+ * @param bottom         Bottom of wall.
+ * @param middle_top     Top of 'middle wall'.
+ * @param middle_bottom  Bottom of 'middle wall'.
  */
 void RCA_MiddleWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_position, int top[2], int bottom[2], int middle_top[2], int middle_bottom[2])
 {
@@ -367,38 +377,67 @@ void RCA_MiddleWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_posit
   {
 	if (wall[0] != NULL)
 	{
-	  if (wall[0]->floor == 0 && wall[0]->ceiling == 0)
-	  {
-		if (wall[0]->a != 0)
-		  boxRGBA(screen, slice_position, middle_top[0], slice_position + 5, middle_bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		RCA_FloorCasting(screen, slice_position, bottom[0], (screen->h - 1), 0);
-		RCA_CeilingCasting(screen, slice_position, top[0], 0, 0);
-	  }
-	}
+	  if (middle_top[0] < top[0])
+	    middle_top[0] = top[0];
+      if (middle_bottom[0] > bottom[0])
+	    middle_bottom[0] = bottom [0];	
+		
+	  if (wall[0]->middle_color[3] != 0)
+		boxRGBA(screen, slice_position, middle_top[0], slice_position + 5, middle_bottom[0], wall[0]->middle_color[0], wall[0]->middle_color[1], 
+				wall[0]->middle_color[2], wall[0]->middle_color[3]);
+	
+	  if (wall[0]->floor == 0)
+	    RCA_FloorCasting(screen, slice_position, bottom[0], (screen->h - 1), 0);
+	  if (wall[0]->ceiling == 0)
+	    RCA_CeilingCasting(screen, slice_position, top[0], 0, 0);
+	} 
   }
   else
   {
-	if (wall[0]->floor == 0 && wall[0]->ceiling == 0)
+	if (middle_top[1] < top[1])
+	  middle_top[1] = top[1];
+    if (middle_bottom[1] > bottom[1])
+	  middle_bottom[1] = bottom [1];
+    if (middle_bottom[1] > middle_bottom[0])
+	  middle_bottom[1] = middle_bottom[0];
+    if (middle_top[1] < middle_top[0])
+	  middle_top[1] = middle_top[0];  
+	  
+	if (wall[1]->middle_color[3] != 0)
 	{
-	  if (wall[1]->a != 0)
-		boxRGBA(screen, slice_position, middle_top[1], slice_position + 5, middle_bottom[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
-	  if (wall[0]->a != 0)
-	  {
-		boxRGBA(screen, slice_position, middle_top[0], slice_position + 5, middle_bottom[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		RCA_FloorCasting(screen, slice_position, middle_bottom[0], (screen->h - 1), 0);
-		RCA_CeilingCasting(screen, slice_position, middle_top[0], 0, 0);
-	  }
-	  else 
-	  {
-		RCA_FloorCasting(screen, slice_position, middle_bottom[1], (screen->h - 1), 0);
-		RCA_CeilingCasting(screen, slice_position, middle_top[1], 0, 0);	
-	  }
+	  if (middle_bottom[1] > middle_top[1])
+	    boxRGBA(screen, slice_position, middle_top[1], slice_position + 5, middle_bottom[1], wall[1]->middle_color[0], wall[1]->middle_color[1], 
+			    wall[1]->middle_color[2], wall[1]->middle_color[3]);
+	}
+	if (wall[0]->middle_color[3] != 0)
+	{
+	  boxRGBA(screen, slice_position, middle_top[0], slice_position + 5, middle_bottom[0], wall[0]->middle_color[0], wall[0]->middle_color[1], 
+			  wall[0]->middle_color[2], wall[0]->middle_color[3]);
+	  if (wall[0]->floor == 0)
+	    RCA_FloorCasting(screen, slice_position, middle_bottom[0], (screen->h - 1), 0);
+	  if (wall[0]->ceiling == 0)
+	    RCA_CeilingCasting(screen, slice_position, middle_top[0], 0, 0);
+	}
+	else 
+	{
+	  if (wall[0]->floor == 0)
+	    RCA_FloorCasting(screen, slice_position, middle_bottom[1], (screen->h - 1), 0);
+	  if (wall[0]->ceiling == 0)
+	    RCA_CeilingCasting(screen, slice_position, middle_top[1], 0, 0);	
 	}
   }
 }
  
 /**
  * Top wall casting.
+ * 
+ * @param screen         A copy of the current SDL surface.
+ * @param wall           Pointer to a Sector object.
+ * @param slice_position Position of current wall slice.
+ * @param top            Top of wall.
+ * @param bottom         Bottom of wall.
+ * @param middle_top     Top of 'middle wall'.
+ * @param middle_bottom  Bottom of 'middle wall'.
  */
 void RCA_TopWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_position, int top[2], int bottom[2], int middle_top[2], int middle_bottom[2])
 {
@@ -408,15 +447,10 @@ void RCA_TopWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_position
 	{
 	  if (wall[0]->ceiling != 0)
 	  {
-		boxRGBA(screen, slice_position, top[0], slice_position + 5, middle_top[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
-		if (wall[0]->ceiling > 0)
-		{
-		  RCA_FloorCasting(screen, slice_position, middle_top[0], 0, 25);
-		}
-		else 
-		{
-		  RCA_CeilingCasting(screen, slice_position, middle_top[0], 0, -25);
-		}
+		boxRGBA(screen, slice_position, top[0], slice_position + 5, middle_top[0], wall[0]->top_color[0], wall[0]->top_color[1], 
+				wall[0]->top_color[2], wall[0]->top_color[3]);
+		
+		RCA_CeilingCasting(screen, slice_position, middle_top[0], 0, -25);
 	  }
 	}
   }
@@ -424,14 +458,13 @@ void RCA_TopWallCasting(SDL_Surface *screen, Sector *wall[2], int slice_position
   {
 	if (wall[0]->ceiling != 0)
 	{
-	  boxRGBA(screen, slice_position, top[1], slice_position + 5, middle_top[1], wall[1]->r, wall[1]->g, wall[1]->b, wall[1]->a);
-	  boxRGBA(screen, slice_position, top[0], slice_position + 5, middle_top[0], wall[0]->r, wall[0]->g, wall[0]->b, wall[0]->a);
+	  boxRGBA(screen, slice_position, top[1], slice_position + 5, middle_top[1], wall[1]->top_color[0], wall[1]->top_color[1], 
+			  wall[1]->top_color[2], wall[1]->top_color[3]);
+	  boxRGBA(screen, slice_position, top[0], slice_position + 5, middle_top[0], wall[0]->top_color[0], wall[0]->top_color[1], 
+			  wall[0]->top_color[2], wall[0]->top_color[3]);
 	
-	  if (top[0] < middle_top[1] && wall[0]->ceiling < 0)
-		RCA_CeilingCasting(screen, slice_position, top[0], middle_top[1], -25);	
-		
-	  if (middle_top[1] > middle_top[0] && wall[0]->ceiling > 0)
-		RCA_FloorCasting(screen, slice_position, middle_top[0], middle_top[1], 25);
+	  if (middle_top[1] > middle_top[0])
+	    RCA_CeilingCasting(screen, slice_position, middle_top[0], middle_top[1], -25);	
 	}
   }
 }
@@ -517,30 +550,29 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
 	  }
 	  sector->current = sector->current->next;
 	}
-	
+		
 	if (wall[0] != NULL)
 	{
 	  if (wall[0]->floor < wall[0]->ceiling)
 	  {
 	    /* bottom */
 	    RCA_BottomWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
-	    /* middle */
-	    RCA_MiddleWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
 	    /* top */
 	    RCA_TopWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
+		/* middle */
+	    RCA_MiddleWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
 	  }
 	  else
 	  {
 		/* bottom */
 	    RCA_TopWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
-	    /* middle */
-	    RCA_MiddleWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
 	    /* top */
-	    RCA_BottomWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);  
+	    RCA_BottomWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
+		/* middle */
+	    RCA_MiddleWallCasting(screen, wall, slice_position, top, bottom, middle_top, middle_bottom);
 	  }
 	}
-	
-	
+
 	ray_angle -= (60.0 / 256);
 	slice_position -= 5;
   }
