@@ -81,6 +81,7 @@ void RCA_Load()
   /* TODO: add your code here */
   int invisible[4] = {255, 255, 255, 0};
   int white[4] = {255, 255, 255, 255};
+  int light_grey[4] = {125, 125, 125, 255};
   int grey[4] = {100, 100, 100, 255};
   int light_green[4] = {0, 255, 0, 255};
   int dark_green[4] = {0, 100, 0, 255};
@@ -103,30 +104,32 @@ void RCA_Load()
   RCA_AddWallToSector(sector_4, 600, 275, 640, 275, 0, 0, invisible, invisible, invisible);
   RCA_AddWallToSector(sector_4, 600, 400, 640, 400, 0, 0, invisible, white, invisible);
   
-  RCA_AddWallToSector(sector_5, 640, 200, 800, 200, 0, 0, invisible, white, invisible);
-  RCA_AddWallToSector(sector_5, 800, 200, 800, 320, 0, 0, invisible, grey, invisible);
-  RCA_AddWallToSector(sector_5, 640, 225, 640, 275, 0, 0, invisible, invisible, invisible);
-  RCA_AddWallToSector(sector_5, 790, 320, 800, 320, 0, 0, invisible, invisible, invisible);
+  RCA_AddWallToSector(sector_5, 790, 200, 800, 200, 0, 0, invisible, white, invisible);
+  RCA_AddWallToSector(sector_5, 800, 200, 800, 300, 0, 0, invisible, grey, invisible);
+  RCA_AddWallToSector(sector_5, 790, 320, 800, 300, 0, 0, invisible, invisible, invisible);
   
+  RCA_AddWallToSector(sector_6, 640, 200, 790, 200, 0, 0, invisible, white, invisible);
+  RCA_AddWallToSector(sector_6, 640, 400, 790, 400, 0, 0, invisible, white, invisible);
   RCA_AddWallToSector(sector_6, 790, 320, 790, 360, 0, 0, invisible, invisible, invisible);
+  RCA_AddWallToSector(sector_6, 640, 225, 640, 275, 0, 0, invisible, invisible, invisible);
   
   RCA_AddWallToSector(sector_7, 790, 320, 790, 360, 20, 20, grey, invisible, grey);
-  RCA_AddWallToSector(sector_7, 790, 320, 800, 320, 20, 20, white, white, white);
-  RCA_AddWallToSector(sector_7, 790, 360, 800, 360, 20, 20, white, white, white);
-  RCA_AddWallToSector(sector_7, 800, 320, 800, 360, 20, 20, grey, invisible, grey);
+  RCA_AddWallToSector(sector_7, 790, 320, 800, 300, 20, 20, light_grey, light_grey, light_grey);
+  RCA_AddWallToSector(sector_7, 790, 360, 800, 380, 20, 20, light_grey, light_grey, light_grey);
+  RCA_AddWallToSector(sector_7, 800, 300, 800, 380, 20, 20, grey, invisible, grey);
   
-  RCA_AddWallToSector(sector_8, 790, 360, 800, 360, 0, 0, invisible, invisible, invisible);
-  RCA_AddWallToSector(sector_8, 800, 360, 800, 400, 0, 0, invisible, grey, invisible);
-  RCA_AddWallToSector(sector_8, 640, 400, 800, 400, 0, 0, invisible, white, invisible);
+  RCA_AddWallToSector(sector_8, 790, 360, 800, 380, 0, 0, invisible, invisible, invisible);
+  RCA_AddWallToSector(sector_8, 800, 380, 800, 400, 0, 0, invisible, grey, invisible);
+  RCA_AddWallToSector(sector_8, 790, 400, 800, 400, 0, 0, invisible, white, invisible);
   
   /* BSP tree */
-  RCA_AddNodeToBSPtreeFront(bsptree, 0, 360, 1279, 360);
-    RCA_AddLeafToBSPtreeFront(bsptree->front, sector_8);
-	RCA_AddNodeToBSPtreeBack(bsptree->front, 0, 320, 1279, 320);
-	  RCA_AddLeafToBSPtreeBack(bsptree->front->back, sector_5);
-	  RCA_AddNodeToBSPtreeFront(bsptree->front->back, 780, 0, 780, 719);
-	    RCA_AddLeafToBSPtreeFront(bsptree->front->back->front, sector_7);
-		RCA_AddLeafToBSPtreeBack(bsptree->front->back->front, sector_6);
+  RCA_AddNodeToBSPtreeFront(bsptree, 790, 0, 790, 719);
+    RCA_AddLeafToBSPtreeBack(bsptree->front, sector_6);
+	RCA_AddNodeToBSPtreeFront(bsptree->front, 790, 320, 800, 300);
+	  RCA_AddLeafToBSPtreeBack(bsptree->front->front, sector_5);
+	  RCA_AddNodeToBSPtreeFront(bsptree->front->front, 790, 360, 800, 380);
+	    RCA_AddLeafToBSPtreeFront(bsptree->front->front->front, sector_8);
+		RCA_AddLeafToBSPtreeBack(bsptree->front->front->front, sector_7);
   RCA_AddNodeToBSPtreeBack(bsptree, 600, 0, 600, 719);
     RCA_AddLeafToBSPtreeBack(bsptree->back, sector_1);
 	RCA_AddNodeToBSPtreeFront(bsptree->back, 0, 275, 1279, 275);
