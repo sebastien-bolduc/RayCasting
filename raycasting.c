@@ -41,6 +41,9 @@ Sector *sector_5;
 Sector *sector_6;
 Sector *sector_7;
 Sector *sector_8;
+Sector *sector_9;
+Sector *sector_10;
+Sector *sector_11;
 BSPtree *bsptree;
 
 /**
@@ -71,6 +74,9 @@ void RCA_Init()
   sector_6 = RCA_NewSector();
   sector_7 = RCA_NewSector();
   sector_8 = RCA_NewSector();
+  sector_9 = RCA_NewSector();
+  sector_10 = RCA_NewSector();
+  sector_11 = RCA_NewSector();
 }
 
 /**
@@ -87,11 +93,25 @@ void RCA_Load()
   int dark_green[4] = {0, 100, 0, 255};
   int light_yellow[4] = {255, 255, 0, 255};
   int dark_yellow[4] = {100, 100, 0, 255};
+  int light_red[4] = {200, 0, 0, 255};
+  int dark_red[4] = {100, 0, 0, 255};
   
   RCA_AddWallToSector(sector_1, 600, 225, 600, 275, 0, 0, invisible, invisible, invisible);
   RCA_AddWallToSector(sector_1, 300, 200, 600, 200, 0, 0, invisible, white, invisible);
-  RCA_AddWallToSector(sector_1, 300, 200, 300, 400, 0, 0, invisible, grey, invisible);
-  RCA_AddWallToSector(sector_1, 300, 400, 600, 400, 0, 0, invisible, white, invisible);
+  RCA_AddWallToSector(sector_1, 300, 200, 300, 275, 0, 0, invisible, grey, invisible);
+  RCA_AddWallToSector(sector_1, 500, 275, 600, 275, 0, 0, invisible, invisible, invisible);
+  
+  RCA_AddWallToSector(sector_9, 500, 275, 500, 300, 0, 0, invisible, invisible, invisible);
+  RCA_AddWallToSector(sector_9, 300, 275, 300, 300, 0, 0, invisible, grey, invisible);
+  
+  RCA_AddWallToSector(sector_10, 500, 275, 600, 275, 30, 0, light_red, invisible, invisible);
+  RCA_AddWallToSector(sector_10, 500, 300, 600, 300, 30, 0, light_red, invisible, invisible);
+  RCA_AddWallToSector(sector_10, 500, 275, 500, 300, 30, 0, dark_red, invisible, invisible);
+  RCA_AddWallToSector(sector_10, 600, 275, 600, 300, 1, 0, dark_red, invisible, invisible);
+  
+  RCA_AddWallToSector(sector_11, 500, 300, 600, 300, 0, 0, invisible, invisible, invisible);
+  RCA_AddWallToSector(sector_11, 300, 300, 300, 400, 0, 0, invisible, grey, invisible);
+  RCA_AddWallToSector(sector_11, 300, 400, 600, 400, 0, 0, invisible, white, invisible);
   
   RCA_AddWallToSector(sector_2, 600, 200, 640, 200, 0, 0, invisible, white, invisible);
   RCA_AddWallToSector(sector_2, 600, 225, 640, 225, 0, 0, invisible, invisible, invisible);
@@ -103,6 +123,7 @@ void RCA_Load()
   
   RCA_AddWallToSector(sector_4, 600, 275, 640, 275, 0, 0, invisible, invisible, invisible);
   RCA_AddWallToSector(sector_4, 600, 400, 640, 400, 0, 0, invisible, white, invisible);
+  RCA_AddWallToSector(sector_4, 600, 275, 600, 300, 0, 0, invisible, invisible, invisible);
   
   RCA_AddWallToSector(sector_5, 790, 200, 800, 200, 0, 0, invisible, white, invisible);
   RCA_AddWallToSector(sector_5, 800, 200, 800, 300, 0, 0, invisible, grey, invisible);
@@ -131,7 +152,13 @@ void RCA_Load()
 	    RCA_AddLeafToBSPtreeFront(bsptree->front->front->front, sector_8);
 		RCA_AddLeafToBSPtreeBack(bsptree->front->front->front, sector_7);
   RCA_AddNodeToBSPtreeBack(bsptree, 600, 0, 600, 719);
-    RCA_AddLeafToBSPtreeBack(bsptree->back, sector_1);
+    RCA_AddNodeToBSPtreeBack(bsptree->back, 0, 275, 1279, 275);
+      RCA_AddLeafToBSPtreeBack(bsptree->back->back, sector_1);
+	  RCA_AddNodeToBSPtreeFront(bsptree->back->back, 0, 300, 1279, 300);
+	    RCA_AddLeafToBSPtreeFront(bsptree->back->back->front, sector_11);
+		RCA_AddNodeToBSPtreeBack(bsptree->back->back->front, 500, 0, 500, 719);
+		  RCA_AddLeafToBSPtreeBack(bsptree->back->back->front->back, sector_9);
+		  RCA_AddLeafToBSPtreeFront(bsptree->back->back->front->back, sector_10);
 	RCA_AddNodeToBSPtreeFront(bsptree->back, 0, 275, 1279, 275);
 	  RCA_AddLeafToBSPtreeFront(bsptree->back->front, sector_4);
 	  RCA_AddNodeToBSPtreeBack(bsptree->back->front, 0, 225, 1279, 225);
@@ -236,6 +263,9 @@ void RCA_Draw()
 	RCA_DrawSector(screen, sector_6);
 	RCA_DrawSector(screen, sector_7);
 	RCA_DrawSector(screen, sector_8);
+	RCA_DrawSector(screen, sector_9);
+	RCA_DrawSector(screen, sector_10);
+	RCA_DrawSector(screen, sector_11);
     RCA_DrawElement(screen, player);
   }
   else 
@@ -281,6 +311,9 @@ int main(int argc, char **argv)
   RCA_DestroySector(sector_6);
   RCA_DestroySector(sector_7);
   RCA_DestroySector(sector_8);
+  RCA_DestroySector(sector_9);
+  RCA_DestroySector(sector_10);
+  RCA_DestroySector(sector_11);
 
   SDL_Quit();
 

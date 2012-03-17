@@ -491,6 +491,8 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
   double ray_angle = element->direction + 30;
   int slice_position = 1275;
   Sector *wall[2] = {NULL, NULL};
+  
+  double offset, m, y;
 	
   for (i = 0; i < 256; i++)
   {
@@ -534,6 +536,13 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
 			middle_top[0] = current_top + (int)floor(wall[0]->ceiling * height / 100);
 			middle_bottom[1] = middle_bottom[0];
 			middle_bottom[0] = current_bottom - (int)floor(wall[0]->floor * height / 100);
+			
+			if (wall[0]->bottom_color[0] == 200)
+			{
+			  offset = sqrt(pow((intersection[0] - wall[0]->x2), 2) + pow((intersection[1] - wall[0]->y2), 2));
+			  m = wall[0]->floor / sqrt(pow((wall[0]->x2 - wall[0]->x1), 2) + pow((wall[0]->y2 - wall[0]->y1), 2));
+			  middle_bottom[0] = current_bottom - (int)((offset * m) / wall[0]->floor * (floor(wall[0]->floor * height / 100)));
+			}
 		  }
 		  else
 		  {
@@ -542,6 +551,13 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
 			bottom[0 + flag] = current_bottom;
 			middle_top[0 + flag] = current_top + (int)floor(wall[0 + flag]->ceiling * height / 100);
 			middle_bottom[0 + flag] = current_bottom - (int)floor(wall[0 + flag]->floor * height / 100);
+			
+			if (wall[0 + flag]->bottom_color[0] == 200)
+			{
+			  offset = sqrt(pow((intersection[0] - wall[0 + flag]->x2), 2) + pow((intersection[1] - wall[0 + flag]->y2), 2));
+			  m = wall[0 + flag]->floor / sqrt(pow((wall[0 + flag]->x2 - wall[0 + flag]->x1), 2) + pow((wall[0 + flag]->y2 - wall[0 + flag]->y1), 2));
+			  middle_bottom[0 + flag] = current_bottom - (int)((offset * m) / wall[0 + flag]->floor * (floor(wall[0 + flag]->floor * height / 100)));
+			}
 		  }
 		  
 		  flag = 1;
