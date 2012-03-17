@@ -537,11 +537,30 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
 			middle_bottom[1] = middle_bottom[0];
 			middle_bottom[0] = current_bottom - (int)floor(wall[0]->floor * height / 100);
 			
-			if (wall[0]->bottom_color[0] == 200)
+			/* Slope floor */
+			if (wall[0]->floor_slope != 0)
 			{
-			  offset = sqrt(pow((intersection[0] - wall[0]->x2), 2) + pow((intersection[1] - wall[0]->y2), 2));
+			  if (wall[0]->floor_slope < 0)
+			    offset = sqrt(pow((intersection[0] - wall[0]->x2), 2) + pow((intersection[1] - wall[0]->y2), 2));
+			  else
+				offset = sqrt(pow((intersection[0] - wall[0]->x1), 2) + pow((intersection[1] - wall[0]->y1), 2));  
+			  
 			  m = wall[0]->floor / sqrt(pow((wall[0]->x2 - wall[0]->x1), 2) + pow((wall[0]->y2 - wall[0]->y1), 2));
-			  middle_bottom[0] = current_bottom - (int)((offset * m) / wall[0]->floor * (floor(wall[0]->floor * height / 100)));
+			  middle_bottom[0] = current_bottom - (int)((offset * m) / wall[0]->floor * (floor(wall[0]->floor * height / 100))
+								 + (floor(fabs(wall[0]->floor_slope) * height / 100)) * (wall[0]->floor / fabs(wall[0]->floor)));
+			}
+			
+			/* Slope ceiling */
+			if (wall[0]->ceiling_slope != 0)
+			{
+			  if (wall[0]->ceiling_slope < 0)
+			    offset = sqrt(pow((intersection[0] - wall[0]->x2), 2) + pow((intersection[1] - wall[0]->y2), 2));
+			  else
+				offset = sqrt(pow((intersection[0] - wall[0]->x1), 2) + pow((intersection[1] - wall[0]->y1), 2));  
+			  
+			  m = wall[0]->ceiling / sqrt(pow((wall[0]->x2 - wall[0]->x1), 2) + pow((wall[0]->y2 - wall[0]->y1), 2));
+			  middle_top[0] = current_top + (int)((offset * m) / wall[0]->ceiling * (floor(wall[0]->ceiling * height / 100))
+								 + (floor(fabs(wall[0]->ceiling_slope) * height / 100)) * (wall[0]->ceiling / fabs(wall[0]->ceiling)));
 			}
 		  }
 		  else
@@ -552,11 +571,30 @@ void RCA_WallCasting(SDL_Surface *screen, Element *element, Sector *sector)
 			middle_top[0 + flag] = current_top + (int)floor(wall[0 + flag]->ceiling * height / 100);
 			middle_bottom[0 + flag] = current_bottom - (int)floor(wall[0 + flag]->floor * height / 100);
 			
-			if (wall[0 + flag]->bottom_color[0] == 200)
+			/* Slope floor */
+			if (wall[0 + flag]->floor_slope != 0)
 			{
-			  offset = sqrt(pow((intersection[0] - wall[0 + flag]->x2), 2) + pow((intersection[1] - wall[0 + flag]->y2), 2));
+			  if (wall[0 + flag]->floor_slope < 0)
+			    offset = sqrt(pow((intersection[0] - wall[0 + flag]->x2), 2) + pow((intersection[1] - wall[0 + flag]->y2), 2));
+			  else 
+			    offset = sqrt(pow((intersection[0] - wall[0 + flag]->x1), 2) + pow((intersection[1] - wall[0 + flag]->y1), 2));
+				
 			  m = wall[0 + flag]->floor / sqrt(pow((wall[0 + flag]->x2 - wall[0 + flag]->x1), 2) + pow((wall[0 + flag]->y2 - wall[0 + flag]->y1), 2));
-			  middle_bottom[0 + flag] = current_bottom - (int)((offset * m) / wall[0 + flag]->floor * (floor(wall[0 + flag]->floor * height / 100)));
+			  middle_bottom[0 + flag] = current_bottom - (int)((offset * m) / wall[0 + flag]->floor * (floor(wall[0 + flag]->floor * height / 100))
+										+ (floor(fabs(wall[0 + flag]->floor_slope) * height / 100)) * (wall[0 + flag]->floor / fabs(wall[0 + flag]->floor)));
+			}
+			
+			/* Slope ceiling */
+			if (wall[0 + flag]->ceiling_slope != 0)
+			{
+			  if (wall[0 + flag]->ceiling_slope < 0)
+			    offset = sqrt(pow((intersection[0] - wall[0 + flag]->x2), 2) + pow((intersection[1] - wall[0 + flag]->y2), 2));
+			  else
+				offset = sqrt(pow((intersection[0] - wall[0 + flag]->x1), 2) + pow((intersection[1] - wall[0 + flag]->y1), 2));  
+			  
+			  m = wall[0 + flag]->ceiling / sqrt(pow((wall[0 + flag]->x2 - wall[0 + flag]->x1), 2) + pow((wall[0 + flag]->y2 - wall[0 + flag]->y1), 2));
+			  middle_top[0 + flag] = current_top + (int)((offset * m) / wall[0 + flag]->ceiling * (floor(wall[0 + flag]->ceiling * height / 100))
+								 + (floor(fabs(wall[0 + flag]->ceiling_slope) * height / 100)) * (wall[0 + flag]->ceiling / fabs(wall[0 + flag]->ceiling)));
 			}
 		  }
 		  
